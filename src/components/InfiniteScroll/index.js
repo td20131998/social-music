@@ -24,12 +24,8 @@ class InfiniteScroll extends React.Component {
 
             if (error || isLoading || !hasMore) return
 
-            if (window.innerHeight + window.scrollY
-                == document.body.offsetHeight) {
-                    console.log('innerHeight: ', window.innerHeight)
-                    console.log('scrollTop: ', document.documentElement.scrollTop)
-                    console.log('offsetheight: ', document.documentElement.offsetHeight)
-                    console.log('bottom')
+            if (window.innerHeight + window.scrollY === document.body.offsetHeight) {
+                    console.log('loading more')
                     loadMore()
                 }
         }, 1000)
@@ -65,8 +61,6 @@ class InfiniteScroll extends React.Component {
 
     render() {
         let { data } = this.state
-        console.log(data)
-        console.log(this.props)
         return (
             <div>
                 {data.map(item => (

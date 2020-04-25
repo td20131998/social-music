@@ -6,6 +6,7 @@ import Comment from '../Comment'
 import request from '../../services/api/request'
 
 const { Meta } = Card
+
 let info = {
     author: 'Tungduong',
     avatarSrc: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
@@ -29,7 +30,7 @@ class Post extends React.Component {
         return (
             <div>
                 <Card
-                    style={{ width: '100%', height: '200px' }}
+                    style={{ width: '100%' }}
                     hoverable={true}
                     loading={false}
                     actions={[
@@ -38,13 +39,14 @@ class Post extends React.Component {
                             onClick={this.toggleLove()}
                         />,
                         <SaveOutlined key="save" />,
-                        <CommentOutlined key="comment" />,
-                        <ShareAltOutlined key="share" />
+                        // <CommentOutlined key="comment" />,
+                        // <ShareAltOutlined key="share" />
                     ]}
+                    // extra={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
                 >
-                    <Meta
+                    {/* <Meta
                         style={{ height: '100px', textAlign: 'left' }}
-                        avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                        // avatar={}
                         alt={info.author}
                         title={info.author}
                         description={[
@@ -52,14 +54,24 @@ class Post extends React.Component {
                             <Avatar style={{ display: 'block' }} />
                         ]}
                         
-                    />
+                    /> */}
+                    <div>
+                        <div style={{display: 'inline-block', width: '10%'}}>
+                            <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                            <div>{info.author}</div>
+                        </div>
+                        <div style={{display: 'inline-block', width: '90%'}}>
+                            List music
+                        </div>
+                    </div>
                 </Card>
-                <div>
+                <br />
+                {/* <div> */}
                     {/* <Comment info={info}>
                         <Comment info={info}>
                         </Comment>
                     </Comment> */}
-                </div>
+                {/* </div> */}
             </div>
         )
     }

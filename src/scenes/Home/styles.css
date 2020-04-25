@@ -5,5 +5,10 @@
 } */
 .home {
     background-color: #E9EBEE;
+    position: relative;
+}
+
+.home-left {
+    position: relative;
 }
 

@@ -4,6 +4,8 @@ import './styles.css'
 import Post from '../../components/Post'
 import request from '../../services/api/request'
 import InfiniteScroll from '../../components/InfiniteScroll'
+import LeftSider from './components/LeftSider'
+import RightSider from './components/RightSider'
 
 const { Sider, Content } = Layout
 
@@ -37,11 +39,12 @@ const posts = [
         comments: []
     }
 ]
+
 class Home extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            posts: [],
+            posts: posts,
             index: 0
         }
         this.loadPost = this.loadPost.bind(this)
@@ -76,12 +79,18 @@ class Home extends React.Component {
         return (
             <div className="home">
                 <Row>
-                    <Col xs={0} md={4} lg={6}>Left</Col>
-                    <Col xs={24} md={16} lg={12} className="home-content">
-                        <InfiniteScroll loadData={this.loadPost} component={Post} />
-                        {/* {this.state.posts.map(post => (<Post key={post.id} info={post} />))} */}
+                    <Col xs={0} md={4} lg={4} xl={5} className="home-left">
+                        <LeftSider />
                     </Col>
-                    <Col xs={0} md={4} lg={6} className="home-right">Right</Col>
+
+                    <Col xs={24} md={15} lg={15} xl={14} className="home-content">
+                        {/* <InfiniteScroll loadData={this.loadPost} component={Post} /> */}
+                        {this.state.posts.map(post => (<Post key={post.id} info={post} />))}
+                    </Col>
+                    
+                    <Col xs={0} md={5} lg={5} xl={5} className="home-right">
+                        <RightSider />
+                    </Col>
                 </Row>
             </div>
         )
