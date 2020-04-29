@@ -1,9 +1,48 @@
 import React from 'react'
 import { List, Avatar } from 'antd'
-import './styles.css'
+import styled from 'styled-components'
+
 const { Item } = List
 const { Meta } = Item
 
+const DivRightSider = styled.div`
+    .right-sider {
+        position: fixed;
+        background-color: white;
+    }
+
+    @media only screen and (min-width: 768px) {
+        .right-sider {
+            width: 170px;
+            margin-left: 0;
+        }
+        .ant-list-item {
+            padding-left: 6px !important;
+        }
+    }
+
+    @media only screen and (min-width: 992px) {
+    .right-sider {
+        width: 200px;
+        margin-right: 18px;
+    }
+
+    .ant-list-item {
+        padding-left: 16px !important;
+    }
+    }
+
+    @media only screen and (min-width: 1200px) {
+        .right-sider {
+            width: 200px;
+            margin-left: 40px;
+        }
+
+        .ant-list-item {
+            padding-left: 24px !important;
+        }
+    }
+`
 let listUser = [
     {
         fullname: 'Quang Linh',
@@ -26,22 +65,24 @@ class RightSider extends React.Component {
 
     render() {
         return (
-            <List 
-                bordered={true}
-                header="Suggetions for you"
-                className="right-sider"
-                itemLayout="horizontal"
-                dataSource={this.state.listUser}
-                renderItem={user => (
-                    <Item>
-                        <Meta 
-                            avatar={<Avatar src={user.imgSrc} size="default" />}
-                            title={<a href="http://localhost:3000">{user.fullname}</a>}
-                            description={`@${user.id}`}
-                        />
-                    </Item>
-                )}
-            />
+            <DivRightSider>
+                <List 
+                    bordered={true}
+                    header="Suggetions for you"
+                    className="right-sider"
+                    itemLayout="horizontal"
+                    dataSource={this.state.listUser}
+                    renderItem={user => (
+                        <Item>
+                            <Meta 
+                                avatar={<Avatar src={user.imgSrc} size="default" />}
+                                title={<a href="http://localhost:3000">{user.fullname}</a>}
+                                description={`@${user.id}`}
+                            />
+                        </Item>
+                    )}
+                />
+            </DivRightSider>
         )
     }
 }
