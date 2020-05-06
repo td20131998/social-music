@@ -1,17 +1,19 @@
 import React from 'react'
-import Post from '../../../../components/Post'
-
+import Post from '../../../components/Post'
+import { getAllPlaylist } from '../../../services/playlist/api'
 
 class Playlist extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-            playlist: []
+            playlists: []
         }
         this.loadPlaylist = this.loadPlaylist.bind(this)
     }
     componentDidMount() {
-        this.loadPlaylist()
+        getAllPlaylist().then(playlists => {
+            this.setState({ playlists: [...playlists] })
+        })
     }
 
     loadPlaylist() {
@@ -19,10 +21,11 @@ class Playlist extends React.Component {
     }
 
     render() {
-        console.log('111: ', this.props)
         return (
             <React.Fragment>
-                {this.state.playlist.map(post => (<Post key={post.id} info={post} />))}
+                {this.state.playlists.map(playlist => (
+                    <li>{playlist.name}</li>
+                ))}
             </React.Fragment>
         )
     }

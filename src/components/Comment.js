@@ -7,7 +7,7 @@ const Comment = ({ info, children }) => (
         style={{ textAlign: 'left' }}
         actions={[<span key="Cm-nested-reply-to">Reply to</span>]}
         author={info.name}
-        avatar={<Avatar src={info.avatarSrc} alt={`${info.name}_avatar`} />}
+        avatar={<Avatar src={info.avatarSrc} alt={`${info.name}_avatar`} size='small' />}
         datetime={
             <Tooltip
               title={moment()

@@ -16,7 +16,7 @@ const DivHome = styled.div`
 
 const Home = () => (
     <DivHome>
-        <Row>
+        <Row gutter={[32, 16]}>
             <Col xs={0} md={4} lg={4} xl={5} className="home-left">
                 <LeftSider />
             </Col>

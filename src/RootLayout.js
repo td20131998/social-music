@@ -6,6 +6,7 @@ import Home from './scenes/Home'
 import Wall from './scenes/Wall'
 import { Switch, Link, Route } from 'react-router-dom'
 import styled from 'styled-components'
+import { connect } from 'react-redux'
 
 const DivRootLayout = styled.div`
     @media only screen and (max-width: 575px), only screen and (min-width: 576px) {
@@ -83,81 +84,80 @@ const DivRootLayout = styled.div`
 
 const { Header, Footer, Content } = Layout
 
-class RootLayout extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {}
-    }
+const RootLayout = ({ userInfo }) => {
+    console.log(userInfo)
+    return (
+        <DivRootLayout>
+            <Layout>
+                <Header className="header">
+                    <Row style={{ fontWeight: 700 }} gutter={{ xs: 3, sm: 3, md: 7, lg: 7 }}>
+                        <Col xs={3} sm={2} md={2} lg={2}>
+                            <div className="header-item">
+                                <Link to="/"><img src={Logo} alt="Logo"/></Link>
+                            </div>
+                        </Col>
 
-    render() {
-        return (
-            <DivRootLayout>
-                <Layout>
-                    <Header className="header">
-                        <Row style={{ fontWeight: 700 }} gutter={{ xs: 3, sm: 3, md: 7, lg: 7 }}>
-                            <Col xs={3} sm={2} md={2} lg={2}>
-                                <div className="header-item">
-                                    <Link to="/"><img src={Logo} alt="Logo"/></Link>
-                                </div>
-                            </Col>
+                        <Col xs={6} sm={11} md={8} lg={11}>
+                            <Input 
+                                className="search"
+                                size="large" 
+                                placeholder="Tìm kiếm" 
+                                prefix={<SearchOutlined style={{ fontSize: '20px' }} />} 
+                                onChange={(value) => console.log(value)}
+                                onPressEnter={(value) => console.log(value)} />
+                        </Col>
 
-                            <Col xs={6} sm={11} md={8} lg={11}>
-                                <Input 
-                                    className="search"
-                                    size="large" 
-                                    placeholder="Tìm kiếm" 
-                                    prefix={<SearchOutlined style={{ fontSize: '20px' }} />} 
-                                    onChange={(value) => console.log(value)}
-                                    onPressEnter={(value) => console.log(value)} />
-                            </Col>
+                        <Col xs={0} sm={0} md={4} lg={3}>
+                            <div className="header-item">
+                                <Link to="/">Trang chủ</Link>
+                            </div>
+                        </Col>
 
-                            <Col xs={0} sm={0} md={4} lg={3}>
-                                <div className="header-item">
-                                    <Link to="/">Trang chủ</Link>
-                                </div>
-                            </Col>
+                        {/* <Col xs={0} sm={0} md={4} lg={3} xl={3}>
+                            <div className="header-item">
+                                <Link to="/username/followers">Đang theo dõi</Link>
+                            </div>
+                        </Col> */}
+                        <Col xs={9} sm={5} md={4} lg={4}>
+                            <div className="header-item">
+                                <Link to="/username">
+                                    <Avatar size="small" icon={<UserOutlined />} /> Tungduong
+                                </Link>
+                            </div>
+                        </Col>
 
-                            {/* <Col xs={0} sm={0} md={4} lg={3} xl={3}>
-                                <div className="header-item">
-                                    <Link to="/username/followers">Đang theo dõi</Link>
-                                </div>
-                            </Col> */}
-                            <Col xs={9} sm={5} md={4} lg={4}>
-                                <div className="header-item">
-                                    <Link to="/username">
-                                        <Avatar size="small" icon={<UserOutlined />} /> Tungduong
-                                    </Link>
-                                </div>
-                            </Col>
+                        <Col xs={0} sm={0} md={0} lg={1}>
+                            <div style={{ fontSize: '30px' }}>|</div>
+                        </Col>
 
-                            <Col xs={0} sm={0} md={0} lg={1}>
-                                <div style={{ fontSize: '30px' }}>|</div>
-                            </Col>
+                        <Col xs={2} sm={2} md={2} lg={1}>
+                            <div className="header-item"><MessageFilled style={{ fontSize: '20px' }} /></div>
+                        </Col>
 
-                            <Col xs={2} sm={2} md={2} lg={1}>
-                                <div className="header-item"><MessageFilled style={{ fontSize: '20px' }} /></div>
-                            </Col>
+                        <Col xs={2} sm={2} md={2} lg={1}>
+                            <div className="header-item"><BellFilled style={{ fontSize: '20px' }} /></div>
+                        </Col>
 
-                            <Col xs={2} sm={2} md={2} lg={1}>
-                                <div className="header-item"><BellFilled style={{ fontSize: '20px' }} /></div>
-                            </Col>
-
-                            <Col xs={2} sm={2} md={2} lg={1}>
-                                <div className="header-item"><MoreOutlined rotate={90} style={{ fontSize: '20px' }} /></div>
-                            </Col>
-                        </Row>
-                    </Header>
-                    <Content className="content">
-                        <Switch>
-                            <Route exact path="/username" component={Wall} />
-                            <Route component={Home} />
-                        </Switch>
-                    </Content>
-                    <Footer className="footer"></Footer>
-                </Layout>
-            </DivRootLayout>
-        )
-    }
+                        <Col xs={2} sm={2} md={2} lg={1}>
+                            <div className="header-item"><MoreOutlined rotate={90} style={{ fontSize: '20px' }} /></div>
+                        </Col>
+                    </Row>
+                </Header>
+                <Content className="content">
+                    <Switch>
+                        <Route exact path="/username" component={Wall} />
+                        <Route component={Home} />
+                    </Switch>
+                </Content>
+                <Footer className="footer"></Footer>
+            </Layout>
+        </DivRootLayout>
+    )
 }
 
-export default RootLayout
+
+export default connect(
+    (state) => ({
+        userInfo: state.user
+    })
+)(RootLayout)

@@ -1,5 +1,5 @@
 import React from 'react'
-import Post from '../../../../components/Post'
+import Post from './Post'
 
 const posts = [
     {
@@ -49,12 +49,7 @@ class PostList extends React.Component {
         this.loadPostList()
     }
 
-    // componentDidUpdate() {
-    //     this.loadPost()
-    // }
-    
     loadPostList() {
-        console.log('PostList')
         this.setState({posts: posts})
     }
 
