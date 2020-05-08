@@ -6,17 +6,3 @@ export function getListPost(page) {
         method: 'get'
     })
 }
-
-export function likePost(id) {
-    return request({
-        url: `/api/likes/${id}`,
-        method: 'post'
-    })
-}
-
-export function unlikePost(id) {
-    return request({
-        url: `/api/likes/${id}`,
-        method: 'delete'
-    })
-}

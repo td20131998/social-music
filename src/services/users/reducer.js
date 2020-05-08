@@ -1,20 +1,32 @@
-import { INIT_USER_INFO, SET_AUTHENTICATE } from './actions'
-import { isExpired } from '../../common/jwt'
+import { INIT_USER_INFO, SET_AUTHENTICATE } from "./actions";
+import { isExpired, decodeJwt, getToken } from "../../common/jwt";
 
-const initialState = {
-    isAuthenticated: isExpired(),
-    info: {}
+function initUserInfo() {
+  let decodedJwt = decodeJwt(getToken());
+
+  if (decodedJwt && decodedJwt.userInfo) {
+    delete decodedJwt.userInfo.comments;
+    delete decodedJwt.userInfo.likes;
+    delete decodedJwt.userInfo.password;
+    return decodedJwt.userInfo
+  }
+  return {}
 }
 
-export default function userReducer(state = initialState, action) {
-    switch (action.type) {
-        case INIT_USER_INFO:
-            return { ...state, info: action.userInfo }
+const initialState = {
+  isAuthenticated: isExpired(),
+  info: initUserInfo()
+};
 
-        case SET_AUTHENTICATE: 
-            return { ...state, isAuthenticated: action.isAuthenticated }
-        
-        default:
-            return state
-    }
+export default function userReducer(state = initialState, action) {
+  switch (action.type) {
+    case INIT_USER_INFO:
+      return { ...state, info: action.userInfo };
+
+    case SET_AUTHENTICATE:
+      return { ...state, isAuthenticated: action.isAuthenticated };
+
+    default:
+      return state;
+  }
 }

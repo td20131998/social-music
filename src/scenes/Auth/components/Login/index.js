@@ -6,7 +6,7 @@ import styled from "styled-components";
 import { login } from '../../../../services/users/api'
 import { connect } from 'react-redux'
 import { initUserInfo, setAuthenticate } from '../../../../services/users/actions'
-import { setToken } from '../../../../common/jwt'
+import { setToken, decodeJwt } from '../../../../common/jwt'
 
 const { Item } = Form;
 
@@ -40,9 +40,19 @@ class Login extends React.Component {
       if (res.status !== 1) {
         alert('login faild')
       } else {
-        setToken(res.result.token)
-        dispatch(initUserInfo(res.result.userInfo))
+        const token = res.result.token
+        setToken(token)
+        let decodedJwt = decodeJwt()
+
+        if (decodedJwt && decodedJwt.userInfo) {
+          delete decodedJwt.userInfo.comments
+          delete decodedJwt.userInfo.likes
+          delete decodedJwt.userInfo.password
+        }
+
+        dispatch(initUserInfo(decodedJwt.userInfo))
         dispatch(setAuthenticate(true))
+
         if (this.props.from) {
           this.props.history.push(this.props.from);
         } else {

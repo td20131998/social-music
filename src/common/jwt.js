@@ -13,13 +13,17 @@ export function resetToken() {
     return localStorage.removeItem('token')
 }
 
-export function isExpired() {
+export function decodeJwt() {
     const token = getToken()
-    if (!token) {
-        return false
+    if (token) {
+        return jwtDecode(token)
     }
-    const decodedJwt = jwtDecode(token)
-    if (decodedJwt.exp > (Date.now() / 1000)) {
+    return false
+}
+
+export function isExpired() {
+    const decodedJwt = decodeJwt()
+    if (decodedJwt && decodedJwt.exp > (Date.now() / 1000)) {
         return true
     }
     return false

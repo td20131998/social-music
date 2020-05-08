@@ -85,7 +85,7 @@ const DivRootLayout = styled.div`
 const { Header, Footer, Content } = Layout
 
 const RootLayout = ({ userInfo }) => {
-    console.log(userInfo)
+    console.log('rootlayout: ', userInfo)
     return (
         <DivRootLayout>
             <Layout>
@@ -120,8 +120,8 @@ const RootLayout = ({ userInfo }) => {
                         </Col> */}
                         <Col xs={9} sm={5} md={4} lg={4}>
                             <div className="header-item">
-                                <Link to="/username">
-                                    <Avatar size="small" icon={<UserOutlined />} /> Tungduong
+                                <Link to={`/${userInfo.username}`}>
+                                    <Avatar size="small" icon={<UserOutlined />} /> {userInfo.username}
                                 </Link>
                             </div>
                         </Col>
@@ -145,7 +145,7 @@ const RootLayout = ({ userInfo }) => {
                 </Header>
                 <Content className="content">
                     <Switch>
-                        <Route exact path="/username" component={Wall} />
+                        <Route exact path={`/${userInfo.username}`} component={Wall} />
                         <Route component={Home} />
                     </Switch>
                 </Content>
@@ -156,8 +156,4 @@ const RootLayout = ({ userInfo }) => {
 }
 
 
-export default connect(
-    (state) => ({
-        userInfo: state.user
-    })
-)(RootLayout)
+export default connect(state => ({ userInfo: state.user.info }))(RootLayout)
