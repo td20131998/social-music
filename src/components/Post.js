@@ -4,8 +4,9 @@ import PropTypes from "prop-types";
 import { SaveOutlined } from "@ant-design/icons";
 import Heart from "./Heart";
 import styled from "styled-components";
-import CommentList from "./CommentList";
-import LikeList from "./LikeList";
+import CommentAction from "./CommentAction";
+import LikeAction from "./LikeAction";
+import PlaylistAction from './PlaylistAction'
 
 const { Meta } = Card;
 const { Item } = List;
@@ -14,12 +15,10 @@ const DivPost = styled.div`
   .ant-list-item {
     display: block;
   }
-  .anticon-heart,
-  .anticon-comment {
+  .anticon {
     display: inline !important;
   }
-  .count-likes,
-  .count-comment {
+  .count {
     padding-left: 10px;
   }
   .ant-card-body {
@@ -38,12 +37,12 @@ class Post extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.info,
-      isShowComment: false,
+      ...this.props.info
     };
   }
 
   render() {
+    console.log(this.state)
     let info = this.state;
     return (
       <DivPost>
@@ -52,17 +51,18 @@ class Post extends React.Component {
           // hoverable={true}
           loading={false}
           actions={[
-            <LikeList 
+            <LikeAction 
               likeCount={info.likes.length}
               postId={info._id}
               isLike={info.isLike}
             />,
-            <CommentList
+            <CommentAction
               commentCount={info.comments.length}
               postId={info._id}
             />,
-            <SaveOutlined onClick={() => console.log("save")} />,
-            // <ShareAltOutlined key="share" />
+            <PlaylistAction 
+              postId={info._id}
+            />
           ]}
           extra={
             <>
@@ -82,7 +82,7 @@ class Post extends React.Component {
                 <div>{info.song.name}</div>
                 <audio controls>
                   {/* this is source audio */}
-                  <source src="https://cdns-preview-1.dzcdn.net/stream/c-13039fed16a173733f227b0bec631034-10.mp3" />
+                  <source src={`http://localhost:8080/api/songs/${info.song.source}/play`} />
                 </audio>
               </Item>
             </List>

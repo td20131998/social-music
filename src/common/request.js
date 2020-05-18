@@ -16,6 +16,7 @@ client.interceptors.request.use(function(config) {
 })
 
 client.interceptors.response.use(function(response) {
+    console.log('request: ', response)
     return response.data
 })
 

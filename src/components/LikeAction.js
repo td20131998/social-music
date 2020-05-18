@@ -5,7 +5,7 @@ import { Modal, List, Avatar as Avt } from "antd";
 
 const { Item } = List;
 
-class LikeList extends React.Component {
+class LikeAction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -66,7 +66,7 @@ class LikeList extends React.Component {
           toggleLove={() => this.toggleLove(this.state.isLike)}
           style={{ display: "inline" }}
         />
-        <span className="count-likes" onClick={this.showLikes}>
+        <span className="count" onClick={this.showLikes}>
           {this.state.likeCount}
         </span>
         <Modal
@@ -102,4 +102,4 @@ const Avatar = ({ author }) => (
   </>
 );
 
-export default LikeList;
+export default LikeAction;

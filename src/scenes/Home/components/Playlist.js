@@ -1,64 +1,56 @@
-import React from 'react'
-import Post from '../../../components/Post'
-import { getAllPlaylist } from '../../../services/playlist/api'
+import React from "react";
+import Post from "../../../components/Post";
+import { getPlaylistUser } from "../../../services/playlist/api";
+import { connect } from "react-redux";
+import { List, Avatar } from "antd";
+import styled from 'styled-components'
+
+const { Item } = List;
+
+const DivPlaylist = styled.div`
+    .ant-list {
+        background: white;
+        margin-bottom: 15px;
+    }
+`
 
 class Playlist extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            playlists: []
-        }
-        this.loadPlaylist = this.loadPlaylist.bind(this)
-    }
-    componentDidMount() {
-        getAllPlaylist().then(playlists => {
-            this.setState({ playlists: [...playlists] })
-        })
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      playlists: [],
+    };
+  }
+  componentDidMount() {
+    getPlaylistUser().then((playlists) => {
+      this.setState({ playlists: [...playlists] });
+    });
+  }
 
-    loadPlaylist() {
-        this.setState({ playlist: posts })
-    }
-
-    render() {
-        return (
-            <React.Fragment>
-                {this.state.playlists.map(playlist => (
-                    <li>{playlist.name}</li>
-                ))}
-            </React.Fragment>
-        )
-    }
+  render() {
+    return (
+      <DivPlaylist>
+        {this.state.playlists.map((playlist) => (
+          <List
+            itemLayout="horizontal"
+            dataSource={playlist.posts}
+            header={<div>{playlist.name}</div>}
+            bordered
+            size='large'
+            renderItem={(post) => (
+                <Item>
+                    <Item.Meta 
+                        avatar={<Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />}
+                        title={<a href="https://ant.design">{post.content}</a>}
+                        description={post.user}
+                    />
+                </Item>
+            )}
+          />
+        ))}
+      </DivPlaylist>
+    );
+  }
 }
 
-const posts = [
-    {
-        id: 0,
-        author: 'author 0',
-        love: true,
-        playlist: [],
-        comments: []
-    },
-    {
-        id: 1,
-        author: 'author 1',
-        love: false,
-        playlist: [],
-        comments: []
-    },
-    {
-        id: 2,
-        author: 'author 2',
-        love: true,
-        playlist: [],
-        comments: []
-    },
-    {
-        id: 3,
-        author: 'author 3',
-        love: false,
-        playlist: [],
-        comments: []
-    }
-]
-export default Playlist
+export default connect((state) => console.log(state))(Playlist);

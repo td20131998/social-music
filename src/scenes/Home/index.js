@@ -8,6 +8,7 @@ import PopularList from './components/PopularList'
 import PostList from './components/PostList'
 import LeftSider from './components/LeftSider'
 import RightSider from './components/RightSider'
+import Upload from './components/Upload'
 import styled from 'styled-components'
 
 const DivHome = styled.div`
@@ -23,6 +24,8 @@ const Home = () => (
 
             <Col xs={24} md={15} lg={15} xl={14} className="home-content">
                 <Route exact path='/' component={PostList} />
+                
+                <Route path='/upload' component={Upload} />
 
                 <Route path='/playlist' component={Playlist} />
 

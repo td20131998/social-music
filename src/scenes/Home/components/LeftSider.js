@@ -1,9 +1,10 @@
 import React from 'react'
-import { Menu, Avatar } from 'antd';
+import { Menu } from 'antd';
 import { 
-    UserOutlined,
-    CalendarOutlined,
-    AppstoreOutlined,
+    CloudUploadOutlined,
+    PlayCircleOutlined,
+    HeartOutlined,
+    NodeIndexOutlined,
     SettingOutlined
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom'
@@ -56,30 +57,30 @@ const LeftSider = () => (
             defaultSelectedKeys={['1']}
             mode="inline"
         >
-            {/* <Item key="1">
-                <Link to="/username">
-                    <Avatar size="small" icon={<UserOutlined />} />
-                    Tungduong
+            <Item key="1">
+                <Link to="/upload">
+                    <CloudUploadOutlined />
+                    Upload
                 </Link>
-            </Item> */}
+            </Item>
 
             <Item key="2">
                 <Link to='/playlist'>
-                    <CalendarOutlined />
+                    <PlayCircleOutlined />
                     Playlist
                 </Link>
             </Item>
 
             <Item key="3">
                 <Link to='/liked'>
-                    <AppstoreOutlined />
+                    <HeartOutlined />
                     Đã thích
                 </Link>
             </Item>
 
             <Item key="4">
                 <Link to='/popular'>
-                    <SettingOutlined />
+                <NodeIndexOutlined />
                     Phổ biến
                 </Link>
             </Item>
