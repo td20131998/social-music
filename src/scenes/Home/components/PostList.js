@@ -1,6 +1,6 @@
 import React from "react";
-import Post from "../../../components/Post";
-import { getListPost } from "../../../services/posts/api";
+import Post from "components/Post";
+import { getListPost } from "services/posts/api";
 import styled from 'styled-components'
 
 const DivPostList = styled.div`

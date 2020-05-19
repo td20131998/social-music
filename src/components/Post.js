@@ -79,10 +79,10 @@ class Post extends React.Component {
           <div style={{ display: "inline-block", width: "100%" }}>
             <List>
               <Item>
-                <div>{info.song.name}</div>
+                <div>{info.name}</div>
                 <audio controls>
                   {/* this is source audio */}
-                  <source src={`http://localhost:8080/api/songs/${info.song.source}/play`} />
+                  <source src={`http://localhost:8080/api/songs/${info.src}/play`} />
                 </audio>
               </Item>
             </List>

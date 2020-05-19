@@ -3,10 +3,10 @@ import { Form, Input, Button, Checkbox } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { login } from '../../../../services/users/api'
+import { login } from 'services/users/api'
 import { connect } from 'react-redux'
-import { initUserInfo, setAuthenticate } from '../../../../services/users/actions'
-import { setToken, decodeJwt } from '../../../../common/jwt'
+import { initUserInfo, setAuthenticate } from 'services/users/actions'
+import { setToken, decodeJwt } from 'common/jwt'
 
 const { Item } = Form;
 

@@ -1,7 +1,7 @@
 import React from "react";
-import { Upload as UploadAntd, Form, Input } from "antd";
+import { Upload as UploadAntd, Form, Input, Button, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { uploadMusic, createPost, removeMusic } from "../../../services/posts/api";
+import { uploadMusic, createPost, removeMusic } from "services/posts/api";
 import styled from "styled-components";
 
 const { Dragger } = UploadAntd;
@@ -21,12 +21,14 @@ class Upload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      files: []
+      files: [],
+      filename: null
     };
 
     this.uploadSong = this.uploadSong.bind(this);
     this.onChange = this.onChange.bind(this);
     this.removeSong = this.removeSong.bind(this)
+    this.createSong = this.createSong.bind(this)
   }
 
   uploadSong(options) {
@@ -37,22 +39,58 @@ class Upload extends React.Component {
         onProgress({ percent: percent });
       },
     };
-    // uploadMusic(file, config)
-    //   .then((post) => {
-    //     if (post) {
+    uploadMusic(file, config)
+      .then((post) => {
+        if (post) {
+          // console.log(post)
+          this.setState({ filename: post.filename })
           onSuccess('post');
-      //   }
-      // })
-      // .catch((err) => onError(err));
+        }
+      })
+      .catch((err) => onError(err));
   }
 
   onChange({ fileList }) {
     this.setState({ files: [...fileList] });
   }
 
-  removeSong(file) {
-    console.log(file)
+  removeSong() {
+    // console.log(this.state.filename)
     // removeMusic(file)
+    removeMusic(this.state.filename).then(res => {
+      if (res === 'success') {
+        this.setState({ files: [], filename: null })
+        message.success('Remove success!')
+      } else {
+        this.setState({ files: [], filename: null })
+        message.error('Error!')
+      }
+    })
+  }
+
+  createSong({ title, description }) {
+    console.log(this.state.files)
+    let { files } = this.state
+    for(let file of files) {
+      if (file.status !== 'done') {
+        return message.info('Uploading!')
+      }
+    }
+    const data = {
+      name: title,
+      src: this.state.filename,
+      description: description
+    }
+    console.log(data)
+    createPost(data).then(res => {
+      if (res.src) {
+        this.setState({ files: [], filename: null })
+        message.success("Create success!")
+      } else {
+        this.setState({ files: [], filename: null })
+        message.error("Create failed")
+      }
+    })
   }
 
   render() {
@@ -79,13 +117,18 @@ class Upload extends React.Component {
           </p>
         </Dragger>
 
-        <Form>
-          <Item label='Note'>
+        <Form onFinish={this.createSong}>
+          <Item label='Title' name='title'>
             <Input />
           </Item>
 
-          <Item label='Gender'>
+          <Item label='Description' name='description'>
             <Input />
+          </Item>
+
+          <Item>
+            <Button type="primary" htmlType="submit">Create</Button>
+            <Button onClick={this.removeSong}>Cancel</Button>
           </Item>
         </Form>
       </UploadDiv>

@@ -6,14 +6,6 @@ import Auth from './scenes/Auth'
 import { connect } from 'react-redux'
 import { getToken } from './common/jwt'
 
-// function isAuthenticated() {
-//   let token = getToken()
-//   if (!token) {
-//     return false
-//   }
-//   return true
-// }
-
 function PrivateRoute({ children, isAuthenticated, ...rest }) {
   console.log('app auth', isAuthenticated)
   return (

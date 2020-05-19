@@ -1,6 +1,6 @@
 import React from "react";
 import Heart from "./Heart";
-import { likePost, unlikePost, getListLike } from "../services/likes/api";
+import { likePost, unlikePost, getListLike } from "services/likes/api";
 import { Modal, List, Avatar as Avt } from "antd";
 
 const { Item } = List;

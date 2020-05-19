@@ -1,7 +1,7 @@
 import React from 'react'
 import { Row, Col, Card, Button, Space, Avatar, Tabs } from 'antd'
 import { MailOutlined, MoreOutlined } from '@ant-design/icons'
-import PostList from '../../components/PostList'
+import PostList from 'components/PostList'
 import styled from 'styled-components'
 // import { Switch, Link } from 'react-router-dom'
 

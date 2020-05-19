@@ -1,8 +1,8 @@
 import React from "react";
 import { Modal, Input, List, Button } from "antd";
 import { CommentOutlined } from "@ant-design/icons";
-import { addComment } from "../services/comments/api";
-import { getListComment } from "../services/comments/api";
+import { addComment } from "services/comments/api";
+import { getListComment } from "services/comments/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
 

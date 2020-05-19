@@ -2,7 +2,7 @@ import React from "react";
 import { Modal, List } from "antd";
 import { SaveOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
-import { addPostToPlaylist } from "../services/playlist/actions";
+import { addPostToPlaylist } from "services/playlist/actions";
 
 const { Item } = List;
 

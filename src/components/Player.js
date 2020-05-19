@@ -1,8 +1,8 @@
 import React from "react";
-import { getMusic } from "../services/song/api";
+import { getMusic } from "services/song/api";
 import WaveSurfer from "wavesurfer.js";
 import styled from "styled-components";
-import { getToken } from "../common/jwt";
+import { getToken } from "common/jwt";
 import { connect } from "react-redux";
 
 const WaveformContianer = styled.div`

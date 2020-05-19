@@ -10,6 +10,7 @@ body {
   position: relative;
   color: #211922;
   font-size: 12px;
+  background-color: #F0F2F5 !important;
 }
 
 code {

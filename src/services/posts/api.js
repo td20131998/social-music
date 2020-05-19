@@ -1,4 +1,4 @@
-import request from '../../common/request'
+import request from 'common/request'
 
 export function getListPost(page) {
     return request({
@@ -31,8 +31,7 @@ export function createPost(data) {
 
 export function removeMusic(name) {
     return request({
-        url: '/api/songs/remove',
-        method: 'delete',
-        data: name
+        url: `/api/songs/${name}`,
+        method: 'delete'
     })
 }

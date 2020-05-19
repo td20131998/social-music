@@ -1,6 +1,6 @@
 import React from "react";
-import Post from "../../../components/Post";
-import { getPlaylistUser } from "../../../services/playlist/api";
+import Post from "components/Post";
+import { getPlaylistUser } from "services/playlist/api";
 import { connect } from "react-redux";
 import { List, Avatar } from "antd";
 import styled from 'styled-components'

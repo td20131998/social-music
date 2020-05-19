@@ -8,14 +8,14 @@ import {
   UserOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import Home from "./scenes/Home";
-import Wall from "./scenes/Wall";
+import Home from "scenes/Home";
+import Wall from "scenes/Wall";
 import { Switch, Link, Route } from "react-router-dom";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getPlaylistUser } from "./services/playlist/api";
-import { initPlaylistUser } from "./services/playlist/actions";
-import Player from "./components/Player";
+import { getPlaylistUser } from "services/playlist/api";
+import { initPlaylistUser } from "services/playlist/actions";
+import Player from "components/Player";
 
 const DivRootLayout = styled.div`
   @media only screen and (max-width: 575px),
