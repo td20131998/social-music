@@ -1,12 +1,13 @@
 import React from "react";
 import { Card, Avatar, List } from "antd";
 import PropTypes from "prop-types";
-import { SaveOutlined } from "@ant-design/icons";
-import Heart from "./Heart";
+import { RightCircleFilled } from "@ant-design/icons";
 import styled from "styled-components";
 import CommentAction from "./CommentAction";
 import LikeAction from "./LikeAction";
-import PlaylistAction from './PlaylistAction'
+import PlaylistAction from "./PlaylistAction";
+import Wave from "./Wave";
+import { connect } from 'react-redux'
 
 const { Meta } = Card;
 const { Item } = List;
@@ -37,12 +38,16 @@ class Post extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      ...this.props.info
+      ...this.props.info,
     };
   }
 
+  play() {
+
+  }
+
   render() {
-    console.log(this.state)
+    // console.log(this.state);
     let info = this.state;
     return (
       <DivPost>
@@ -51,7 +56,7 @@ class Post extends React.Component {
           // hoverable={true}
           loading={false}
           actions={[
-            <LikeAction 
+            <LikeAction
               likeCount={info.likes.length}
               postId={info._id}
               isLike={info.isLike}
@@ -60,9 +65,7 @@ class Post extends React.Component {
               commentCount={info.comments.length}
               postId={info._id}
             />,
-            <PlaylistAction 
-              postId={info._id}
-            />
+            <PlaylistAction postId={info._id} />,
           ]}
           extra={
             <>
@@ -79,11 +82,31 @@ class Post extends React.Component {
           <div style={{ display: "inline-block", width: "100%" }}>
             <List>
               <Item>
-                <div>{info.name}</div>
+                {/* <div>{info.name}</div>
                 <audio controls>
-                  {/* this is source audio */}
+                  this is source audio
                   <source src={`http://localhost:8080/api/songs/${info.src}/play`} />
-                </audio>
+                </audio> */}
+
+                <div style={{ height: "180px" }}>
+                  <span style={{ display: "inline-block" }}>
+                    <img
+                      src="https://i1.sndcdn.com/artworks-000640919395-6d8iat-t500x500.jpg"
+                      alt="aaa"
+                      width="160"
+                      height="160"
+                    />
+                  </span>
+                  <span style={{ display: "inline-block", width: "100%" }}>
+                    <RightCircleFilled
+                      style={{ fontSize: "50px", color: "#E82C49" }}
+                      onClick={() => console.log(info.src)}
+                    />
+                    <div>{info.user.username}</div>
+                    <h4>{info.name}</h4>
+                    {/* <Wave name={info.name} /> */}
+                  </span>
+                </div>
               </Item>
             </List>
           </div>
@@ -98,4 +121,4 @@ Post.propTypes = {
   info: PropTypes.object.isRequired,
 };
 
-export default Post;
+export default connect()(Post);

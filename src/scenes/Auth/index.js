@@ -1,14 +1,7 @@
 import React from "react";
-import { Form, Input, Button, Checkbox, Tabs, Row } from "antd";
-import { UserOutlined, LockOutlined } from '@ant-design/icons'
-import Login from './components/Login'
-import Signin from './components/Signin'
-import {
-  Route,
-  Switch,
-  Link,
-  Redirect
-} from "react-router-dom";
+import Login from "./components/Login";
+import Signin from "./components/Signin";
+import { Route, Switch, Redirect } from "react-router-dom";
 import styled from "styled-components";
 
 const DivAuth = styled.div`
@@ -19,26 +12,42 @@ const DivAuth = styled.div`
   min-height: 100vh;
 `;
 
-class Auth extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+const Auth = function ({ from }) {
+  return (
+    <DivAuth>
+      <Switch>
+        <Route
+          exact
+          path="/auth"
+          render={() => (
+            <Redirect
+              from="/"
+              to={{
+                pathname: "/auth/login",
+                state: { from: from },
+              }}
+            />
+          )}
+        />
+        <Route
+          path="/auth/login"
+          render={({
+            history,
+            location
+          }) => {
+            let from = undefined
+            if (location && location.state) {
+              from = location.state.from
+            }
+            return <Login history={history} from={from} />}
+          }
+        />
+        <Route path="/auth/signin" component={Signin} />
 
-  render() {
-    return (
-      <DivAuth>
-        <Switch>
-            <Route exact path='/auth' render={() => <Redirect from='/' to={{
-                pathname: '/auth/login',
-                state: { from: this.props.from }
-            }} />} />
-            <Route path='/auth/login' render={({ history, location: { state: { from }} }) => <Login history={history} from={from} />} />
-            <Route path='/auth/signin' component={Signin} />
-        </Switch>
-      </DivAuth>
-    );
-  }
-}
+        <Route path="/auth/reset" render={({}) => <div>reset</div>} />
+      </Switch>
+    </DivAuth>
+  );
+};
 
 export default Auth;

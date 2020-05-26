@@ -1,17 +1,44 @@
 import request from 'common/request'
 
-export function getPlaylistUser() {
+const PLAYLIST = '/api/playlists'
+
+export function apiGetPlaylistUser() {
     return request({
-        url: '/api/playlists/forUser',
+        url: `${PLAYLIST}/forUser`,
         method: 'get'
     })
 }
 
-export function savePostToPlaylist(playlistId, postId) {
+export function apiSavePostToPlaylist(playlistId, postId) {
     const data = { postId: postId }
     return request({
-        url: `/api/playlists/${playlistId}/addPostToPlaylist`,
+        url: `${PLAYLIST}/${playlistId}/addPostToPlaylist`,
         method: 'put',
         data: data
+    })
+}
+
+export function apiCreatePlaylist(playlistName) {
+    const data = { name: playlistName }
+    return request({
+        url: `${PLAYLIST}`,
+        method: 'post',
+        data
+    })
+}
+
+export function apiRemovePlaylist(playlistId) {
+    return request({
+        url: `${PLAYLIST}/${playlistId}`,
+        method: 'delete',
+    })
+}
+
+export function apiUpdatePlaylist(playlistId, newPlaylistName) {
+    const data = { name: newPlaylistName }
+    return request({
+        url: `${PLAYLIST}/${playlistId}`,
+        method: 'put',
+        data
     })
 }

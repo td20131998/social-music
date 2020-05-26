@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
-import Logo from "./Logo.png";
-import { Input, Col, Row, Layout, Avatar } from "antd";
+import { Input, Col, Row, Layout, Avatar, Dropdown, Menu } from "antd";
 import {
   BellFilled,
   MessageFilled,
   MoreOutlined,
   UserOutlined,
   SearchOutlined,
+  AntCloudOutlined,
+  LoginOutlined,
 } from "@ant-design/icons";
 import Home from "scenes/Home";
 import Wall from "scenes/Wall";
-import { Switch, Link, Route } from "react-router-dom";
+import { Switch, Link, Route, Redirect } from "react-router-dom";
 import styled from "styled-components";
 import { connect } from "react-redux";
-import { getPlaylistUser } from "services/playlist/api";
+import { apiGetPlaylistUser } from "services/playlist/api";
 import { initPlaylistUser } from "services/playlist/actions";
+import { setAuthenticate } from "services/users/actions";
 import Player from "components/Player";
+import { resetToken } from "common/jwt";
 
 const DivRootLayout = styled.div`
   @media only screen and (max-width: 575px),
@@ -53,10 +56,14 @@ const DivRootLayout = styled.div`
     position: fixed;
     width: 100%;
     z-index: 1000;
+    a {
+      color: #111111;
+    }
   }
 
   .content {
     margin-top: 70px;
+    margin-bottom: 60px;
   }
 
   .footer {
@@ -64,6 +71,7 @@ const DivRootLayout = styled.div`
     position: fixed;
     bottom: 0;
     width: 100%;
+    padding: 0;
   }
 
   .search {
@@ -97,10 +105,16 @@ const { Header, Footer, Content } = Layout;
 
 const RootLayout = ({ userInfo, dispatch }) => {
   useEffect(() => {
-    getPlaylistUser().then((playlists) => {
+    apiGetPlaylistUser().then((playlists) => {
       dispatch(initPlaylistUser(playlists));
     });
   }, []);
+
+  function logout() {
+    resetToken();
+    dispatch(setAuthenticate(false));
+  }
+
   return (
     <DivRootLayout>
       <Layout>
@@ -112,7 +126,10 @@ const RootLayout = ({ userInfo, dispatch }) => {
             <Col xs={3} sm={2} md={2} lg={2}>
               <div className="header-item">
                 <Link to="/">
-                  <img src={Logo} alt="Logo" />
+                  <AntCloudOutlined
+                    alt="Logo"
+                    style={{ fontSize: "50px", color: "#E82C49" }}
+                  />
                 </Link>
               </div>
             </Col>
@@ -161,7 +178,26 @@ const RootLayout = ({ userInfo, dispatch }) => {
 
             <Col xs={2} sm={2} md={2} lg={1}>
               <div className="header-item">
-                <MoreOutlined rotate={90} style={{ fontSize: "20px" }} />
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item key="0">3rd menu item</Menu.Item>
+                      <Menu.Item key="1">2nd menu item</Menu.Item>
+                      <Menu.Divider />
+                      <Menu.Item
+                        key="2"
+                        icon={<LoginOutlined />}
+                        onClick={logout}
+                      >
+                        Đăng xuất
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  trigger={["click"]}
+                  placement="bottomCenter"
+                >
+                  <MoreOutlined rotate={90} style={{ fontSize: "20px" }} />
+                </Dropdown>
               </div>
             </Col>
           </Row>

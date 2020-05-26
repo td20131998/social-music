@@ -7,7 +7,6 @@ import { connect } from 'react-redux'
 import { getToken } from './common/jwt'
 
 function PrivateRoute({ children, isAuthenticated, ...rest }) {
-  console.log('app auth', isAuthenticated)
   return (
     <Route 
       {...rest}

@@ -13,6 +13,10 @@ import styled from 'styled-components'
 
 const DivHome = styled.div`
     margin-top: 10px;
+    .home-content {
+        background-color: #FFFFFF;
+        margin-top: 8px;
+    }
 `
 
 const Home = () => (

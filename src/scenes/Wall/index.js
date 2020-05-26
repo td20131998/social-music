@@ -1,7 +1,5 @@
 import React from 'react'
 import { Row, Col, Card, Button, Space, Avatar, Tabs } from 'antd'
-import { MailOutlined, MoreOutlined } from '@ant-design/icons'
-import PostList from 'components/PostList'
 import styled from 'styled-components'
 // import { Switch, Link } from 'react-router-dom'
 
@@ -132,15 +130,15 @@ const Wall = () => (
                     <div className='column-right'>
                         <Tabs defaultActiveKey='1' type='card' size='large'>
                             <TabPane tab='All' key='1'>
-                                <PostList />
+                                {/* <PostList /> */}
                             </TabPane>
 
                             <TabPane tab='Liked' key='2'>
-                                <PostList />
+                                {/* <PostList /> */}
                             </TabPane>
 
                             <TabPane tab='Playlist' key='3'>
-                                <PostList />
+                                {/* <PostList /> */}
                             </TabPane>
                         </Tabs>
                     </div>
