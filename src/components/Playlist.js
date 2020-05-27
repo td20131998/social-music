@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { connect } from "react-redux";
 import {
   List,
-  Avatar,
   Empty,
   Input,
   Modal,
@@ -95,7 +94,6 @@ const CreateNewPlaylist = styled.div`
 `;
 
 const Playlist = function ({ playlists, dispatch }) {
-  console.log(playlists);
   const [mdCreatePlaylist, setMdCreatePlaylist] = useState(false);
   const [mdDeletePlaylistWarning, setMdDeletePlaylistWarning] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
@@ -158,6 +156,7 @@ const Playlist = function ({ playlists, dispatch }) {
     setIsValidPlaylistName(value.length > 0 && value !== name ? true : false);
     setPlaylistName(value);
   }
+  
   function toggleMDCreatePlaylist() {
     setMdCreatePlaylist(!mdCreatePlaylist);
   }
@@ -228,7 +227,7 @@ const Playlist = function ({ playlists, dispatch }) {
             size="large"
             renderItem={(post) => (
               <Item className="post">
-                <span className="post-author inline">{post.user}</span>
+                <span className="post-author inline">{post.user.username}</span>
                 <span className="divider inline">{`  -  `}</span>
                 <span className="post-description inline">
                   {post.description}
@@ -317,14 +316,6 @@ const MoreActionDiv = styled.div`
     padding-right: 10px;
   }
 `;
-
-// function useModal(initialState) {
-//   const [visible, setVisible] = useState(false);
-//   const [inputValue, setInputValue] = useState("")
-
-//   function
-
-// }
 
 const MoreAction = ({ deletePlaylistWarning, editPlaylistModal }) => (
   <MoreActionDiv>

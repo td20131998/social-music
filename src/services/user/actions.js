@@ -1,5 +1,6 @@
 export const INIT_USER_INFO = 'INIT_USER_INFO'
 export const SET_AUTHENTICATE = 'SET_AUTHENTICATE'
+export const SET_USER_ACTIVE = 'SET_USER_ACTIVE'
 
 export const initUserInfo = userInfo => ({
     type: INIT_USER_INFO,
@@ -9,4 +10,9 @@ export const initUserInfo = userInfo => ({
 export const setAuthenticate = isAuthenticated => ({
     type: SET_AUTHENTICATE,
     isAuthenticated
+})
+
+export const setUserActive = isActive => ({
+    type: SET_USER_ACTIVE,
+    isActive
 })

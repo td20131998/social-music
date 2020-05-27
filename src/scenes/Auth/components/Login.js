@@ -3,9 +3,9 @@ import { Form, Input, Button, Checkbox, message } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import { apiLogin } from "services/users/api";
+import { apiLogin } from "services/user/api";
 import { connect } from "react-redux";
-import { initUserInfo, setAuthenticate } from "services/users/actions";
+import { initUserInfo, setAuthenticate } from "services/user/actions";
 import { setToken, decodeJwt } from "common/jwt";
 
 const { Item } = Form;
@@ -49,7 +49,7 @@ const Login = function ({ dispatch, from, history }) {
   }
 
   function onFinishFailed() {
-    message.error("Login failed!")
+    message.warning("Vui lòng kiểm tra lại thông tin đăng nhập!")
   }
 
   return (
@@ -69,7 +69,7 @@ const Login = function ({ dispatch, from, history }) {
           rules={[
             {
               required: true,
-              message: "Please input your Username!",
+              message: "Xin hãy nhập Username!",
             },
           ]}
         >
@@ -83,7 +83,7 @@ const Login = function ({ dispatch, from, history }) {
           rules={[
             {
               required: true,
-              message: "Please input your Password!",
+              message: "Xin hãy nhập mật khẩu!",
             },
           ]}
         >
@@ -99,7 +99,7 @@ const Login = function ({ dispatch, from, history }) {
           </Form.Item>
 
           <Link to="/auth/reset" className="login-form-forgot">
-            Forgot password
+            Quên mật khẩu?
           </Link>
         </Item>
 
@@ -109,9 +109,9 @@ const Login = function ({ dispatch, from, history }) {
             htmlType="submit"
             className="login-form-button"
           >
-            Log in
+            Đăng nhập
           </Button>
-          Or <Link to="/auth/signin">Register now!</Link>
+          Hoặc <Link to="/auth/signin">Đăng kí!</Link>
         </Item>
       </Form>
     </DivLogin>

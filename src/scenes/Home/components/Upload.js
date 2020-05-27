@@ -1,7 +1,7 @@
 import React from "react";
 import { Upload as UploadAntd, Form, Input, Button, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { uploadMusic, createPost, removeMusic } from "services/posts/api";
+import { apiUploadMusic, apiCreatePost, apiRemoveMusic } from "services/post/api";
 import styled from "styled-components";
 
 const { Dragger } = UploadAntd;
@@ -39,7 +39,7 @@ class Upload extends React.Component {
         onProgress({ percent: percent });
       },
     };
-    uploadMusic(file, config)
+    apiUploadMusic(file, config)
       .then((post) => {
         if (post) {
           // console.log(post)
@@ -57,7 +57,7 @@ class Upload extends React.Component {
   removeSong() {
     // console.log(this.state.filename)
     // removeMusic(file)
-    removeMusic(this.state.filename).then(res => {
+    apiRemoveMusic(this.state.filename).then(res => {
       if (res === 'success') {
         this.setState({ files: [], filename: null })
         message.success('Remove success!')
@@ -82,7 +82,7 @@ class Upload extends React.Component {
       description: description
     }
     console.log(data)
-    createPost(data).then(res => {
+    apiCreatePost(data).then(res => {
       if (res.src) {
         this.setState({ files: [], filename: null })
         message.success("Create success!")

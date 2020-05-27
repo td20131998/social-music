@@ -1,7 +1,10 @@
 import React from "react";
 import Login from "./components/Login";
 import Signin from "./components/Signin";
+import Reset from "./components/Reset";
+import Active from "./components/Active";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
 import styled from "styled-components";
 
 const DivAuth = styled.div`
@@ -12,7 +15,7 @@ const DivAuth = styled.div`
   min-height: 100vh;
 `;
 
-const Auth = function ({ from }) {
+const Auth = function ({ from, isActive }) {
   return (
     <DivAuth>
       <Switch>
@@ -31,23 +34,22 @@ const Auth = function ({ from }) {
         />
         <Route
           path="/auth/login"
-          render={({
-            history,
-            location
-          }) => {
-            let from = undefined
+          render={({ history, location }) => {
+            let from = undefined;
             if (location && location.state) {
-              from = location.state.from
+              from = location.state.from;
             }
-            return <Login history={history} from={from} />}
-          }
+            return <Login history={history} from={from} />;
+          }}
         />
         <Route path="/auth/signin" component={Signin} />
 
-        <Route path="/auth/reset" render={({}) => <div>reset</div>} />
+        <Route path="/auth/reset" component={Reset} />
+
+        <Route path="/auth/active" component={Active} />
       </Switch>
     </DivAuth>
   );
 };
 
-export default Auth;
+export default connect((state) => ({ isActive: state.user.isActive }))(Auth);
