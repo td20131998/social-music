@@ -4,7 +4,6 @@ import WaveSurfer from "wavesurfer.js";
 import styled from "styled-components";
 import { getToken } from "common/jwt";
 import { connect } from "react-redux";
-import { addNewSong } from "services/player/actions";
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -13,6 +12,120 @@ import {
   QuestionCircleOutlined,
   RetweetOutlined,
 } from "@ant-design/icons";
+import { playnext, playprevious, playorpause } from "services/player/actions";
+import { message } from 'antd'
+
+class Player extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+
+    this.handlePlay = this.handlePlay.bind(this);
+    this.next = this.next.bind(this);
+    this.load = this.load.bind(this);
+    this.previous = this.previous.bind(this);
+    this.onReady = this.onReady.bind(this)
+  }
+
+  componentDidMount() {
+    const { playingIndex, playlist } = this.props;
+    this.$el = ReactDOM.findDOMNode(this);
+    this.$player = this.$el.querySelector("#player");
+    this.player = WaveSurfer.create({
+      waveColor: "violet",
+      progressColor: "purple",
+      barWidth: 2,
+      barHeight: 0.5,
+      barGap: 1,
+      cursorWidth: 1,
+      container: this.$player,
+      backend: "WebAudio",
+      height: 80,
+      responsive: true,
+      cursorColor: "transparent",
+      hideScrollbar: true,
+      xhr: {
+        requestHeaders: [
+          {
+            key: "Authorization",
+            value: `Bearer ${getToken()}`,
+          },
+        ],
+      },
+    });
+    if (playlist.length > 0) {
+      console.log('duongdeptrai')
+      this.load(playlist[playingIndex]);
+    }
+  }
+
+  load(audio) {
+    this.player.load(`http://localhost:8080/api/songs/${audio}`);
+  }
+
+  onReady(doNext) {
+    this.player.on('ready', doNext)
+  }
+
+  next() {
+    const { dispatch, playlist, playingIndex } = this.props
+    if (playlist.length > 0) {
+      dispatch(playnext())
+      this.load(playlist[playingIndex])
+      // this.onReady(dispatch(playorpause))
+    } else {
+      message.info('Playlist rỗng!')
+    }
+  }
+
+  previous() {
+    const { dispatch, playlist, playingIndex } = this.props
+    if (playlist.length > 0) {
+      dispatch(playprevious())
+      this.load(playlist[playingIndex])
+      this.setState({ playing: true })
+    } else {
+      message.info("Playlist rỗng!")
+    }
+  }
+
+  handlePlay() {
+    const { dispatch } = this.props
+    // this.onReady(() => {
+      this.player.playPause()
+      dispatch(playorpause())
+      
+    // })
+    // this.player.playPause()
+    console.log(this.props)
+  }
+
+  render() {
+    console.log(this.props)
+    const { playing } = this.props
+    return (
+      <PlayerDiv>
+        <StepBackwardOutlined className="another" onClick={this.previous} />
+        {!playing ? (
+          <PlayCircleOutlined
+            onClick={this.handlePlay}
+            className="play-pause"
+          />
+        ) : (
+          <PauseCircleOutlined
+            onClick={this.handlePlay}
+            className="play-pause"
+          />
+        )}
+        <StepForwardOutlined className="another" onClick={this.next} />
+        <QuestionCircleOutlined className="another" />
+        <RetweetOutlined className="another" />
+        <Wave id="player" />
+      </PlayerDiv>
+    );
+  }
+}
 
 const PlayerDiv = styled.div`
   background-color: #2d1653;
@@ -43,165 +156,8 @@ const Wave = styled.div`
   }
 `;
 
-class Player extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      playing: false,
-      index: 0,
-      currentAudio: null,
-      isReady: false,
-    };
-
-    this.handlePlay = this.handlePlay.bind(this);
-    this.next = this.next.bind(this);
-    this.onReady = this.onReady.bind(this);
-    this.onError = this.onError.bind(this);
-    this.onFinish = this.onFinish.bind(this);
-    this.load = this.load.bind(this);
-    this.setCurrentAudio = this.setCurrentAudio.bind(this);
-    this.onPause = this.onPause.bind(this)
-    this.onLoading = this.onLoading.bind(this)
-    this.onPlay = this.onPlay.bind(this)
-    this.onAudioProcess = this.onAudioProcess.bind(this)
-    this.previous = this.previous.bind(this)
-  }
-
-  componentDidMount() {
-    this.$el = ReactDOM.findDOMNode(this);
-    this.$player = this.$el.querySelector("#player");
-    this.player = WaveSurfer.create({
-      waveColor: "violet",
-      progressColor: "purple",
-      barWidth: 2,
-      barHeight: 0.5,
-      barGap: 1,
-      cursorWidth: 1,
-      container: this.$player,
-      backend: "WebAudio",
-      height: 80,
-      responsive: true,
-      cursorColor: "transparent",
-      // fillParent: true,
-      hideScrollbar: true,
-      // renderer: WaveSurfer.drawBuffer,
-      xhr: {
-        requestHeaders: [
-          {
-            key: "Authorization",
-            value: `Bearer ${getToken()}`,
-          },
-        ],
-      },
-    });
-    this.$audio = this.$el.querySelector('#audio')
-    // this.setCurrentAudio(this.state.index);
-    this.player.load(this.$audio)
-    this.player.on("ready", this.onReady);
-    this.player.on("error", this.onError);
-    this.player.on("finish", this.onFinish);
-    this.player.on('pause', this.onPause)
-    this.player.on('loading', this.onLoading)
-    this.player.on('play', this.onPlay)
-    this.player.on('audioprocess', this.onAudioProcess)
-    console.log(this.player)
-  }
-
-  load(audio) {
-    this.player.load(`http://localhost:8080/api/songs/${audio}`);
-  }
-
-  onReady() {
-    console.log("ready");
-    // this.player.play()
-  }
-
-  onError(e) {
-    console.log(e);
-  }
-
-  onFinish() {
-    console.log("finish");
-  }
-
-  onPause() {
-    console.log('pause')
-  }
-
-  onLoading() {
-    console.log('loading')
-  }
-
-  onPlay() {
-    console.log('play')
-  }
-
-  onAudioProcess() {
-    console.log('audio process')
-  }
-
-  next() {
-    let { index } = this.state
-    this.setState({ index: index + 1, playing: false }, () => {
-      this.setCurrentAudio(this.state.index)
-      // this.player.drawBuffer()
-      this.player.play()
-    });
-  }
-
-  previous() {
-    this.setState({ index: this.state.index - 1, playing: false }, () => {
-      this.setCurrentAudio(this.state.index)
-      // this.player.drawBuffer()
-
-      this.player.play()
-    })
-  }
-
-  setCurrentAudio(index) {
-    let { list } = this.props;
-    if (index > list.length) {
-      return null;
-    }
-    this.setState({ currentAudio: list[index] }, () => {
-      this.load(this.state.currentAudio);
-      console.log(this.player.source)
-    });
-  }
-
-  handlePlay() {
-    this.setState({ playing: !this.state.playing });
-    this.player.playPause();
-    console.log(this.player)
-  }
-
-  render() {
-    return (
-      <PlayerDiv>
-        <StepBackwardOutlined className="another" onClick={this.previous} />
-        {!this.state.playing ? (
-          <PlayCircleOutlined
-            onClick={this.handlePlay}
-            className="play-pause"
-          />
-        ) : (
-          <PauseCircleOutlined
-            onClick={this.handlePlay}
-            className="play-pause"
-          />
-        )}
-        <StepForwardOutlined className="another" onClick={this.next} />
-        <QuestionCircleOutlined className="another" />
-        <RetweetOutlined className="another" />
-        <Wave id="player" />
-        <audio id="audio">
-          <source src="http://localhost:8080/api/songs/1589962749543-4c7b4108f32.mp3" />
-        </audio>
-      </PlayerDiv>
-    );
-  }
-}
-
 export default connect((state) => ({
-  list: state.player,
+  playlist: state.player.stack,
+  playingIndex: state.player.playingIndex,
+  playing: state.player.playing
 }))(Player);

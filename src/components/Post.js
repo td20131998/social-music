@@ -8,6 +8,7 @@ import LikeAction from "./LikeAction";
 import PlaylistAction from "./PlaylistAction";
 import Wave from "./Wave";
 import { connect } from 'react-redux'
+import { addToStackPlaylist } from 'services/player/actions'
 
 const { Meta } = Card;
 const { Item } = List;
@@ -40,10 +41,14 @@ class Post extends React.Component {
     this.state = {
       ...this.props.info,
     };
+    this.play = this.play.bind(this)
   }
 
-  play() {
-
+  play(audio) {
+    console.log(audio)
+    const { dispatch } = this.props
+    dispatch(addToStackPlaylist(audio))
+    console.log(this.props)
   }
 
   render() {
@@ -100,7 +105,7 @@ class Post extends React.Component {
                   <span style={{ display: "inline-block", width: "100%" }}>
                     <RightCircleFilled
                       style={{ fontSize: "50px", color: "#E82C49" }}
-                      onClick={() => console.log(info.src)}
+                      onClick={() => this.play(info.src)}
                     />
                     <div>{info.user.username}</div>
                     <h4>{info.name}</h4>

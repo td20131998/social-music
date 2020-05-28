@@ -58,35 +58,35 @@ const LeftSider = () => (
             mode="inline"
         >
             <Item key="1">
-                <Link to="/upload">
+                <Link to="/discover/upload">
                     <CloudUploadOutlined />
                     Upload
                 </Link>
             </Item>
 
             <Item key="2">
-                <Link to='/playlist'>
+                <Link to='/discover/playlist'>
                     <PlayCircleOutlined />
                     Playlist
                 </Link>
             </Item>
 
             <Item key="3">
-                <Link to='/liked'>
+                <Link to='/discover/liked'>
                     <HeartOutlined />
                     Đã thích
                 </Link>
             </Item>
 
             <Item key="4">
-                <Link to='/popular'>
+                <Link to='/discover/popular'>
                 <NodeIndexOutlined />
                     Phổ biến
                 </Link>
             </Item>
 
             <Item>
-                <Link to='/category'>
+                <Link to='/discover/category'>
                     <SettingOutlined />
                     Thể loại
                 </Link>

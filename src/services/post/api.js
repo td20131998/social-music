@@ -9,7 +9,7 @@ export function apiGetListPost(page) {
   });
 }
 
-export function apiGetListPostOfUser({ userId, page }) {
+export function apiGetListPostOfUser(userId, page) {
   return request({
     url: `${POST}/${userId}?page=${page}`,
     method: "post",

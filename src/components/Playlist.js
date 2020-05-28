@@ -29,56 +29,6 @@ import {
 
 const { Item } = List;
 
-const DivPlaylist = styled.div`
-  .bold {
-    font-weight: bold;
-  }
-  .right {
-    float: right;
-  }
-  .ant-list {
-    background-color: #7e7b87;
-
-    margin-bottom: 15px;
-  }
-  .ant-list-header {
-    padding-top: 10px !important;
-  }
-
-  .playlist-more {
-    height: 30px;
-    width: 30px;
-    float: right;
-    border-radius: 30px;
-    padding-top: 8px;
-    .ant-popover-inner-content {
-      padding: 5px 5px !important;
-    }
-  }
-
-  .playlist-more:hover {
-    cursor: pointer;
-    background: #f0f2f5;
-  }
-
-  .post {
-    display: block;
-  }
-  .post:hover {
-    cursor: pointer;
-    background-color: ;
-  }
-  .inline {
-    display: inline;
-  }
-  .post-author {
-    color: #e8e9e5;
-  }
-  .post-description, .divider, .post-name {
-    color: #fffae7;
-  }
-`;
-
 const CreateNewPlaylist = styled.div`
   .create-new-playlist {
     display: flex;
@@ -93,7 +43,7 @@ const CreateNewPlaylist = styled.div`
   }
 `;
 
-const Playlist = function ({ playlists, dispatch }) {
+const OwnPlaylist = function ({ playlists, dispatch }) {
   const [mdCreatePlaylist, setMdCreatePlaylist] = useState(false);
   const [mdDeletePlaylistWarning, setMdDeletePlaylistWarning] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
@@ -299,6 +249,56 @@ const Playlist = function ({ playlists, dispatch }) {
   );
 };
 
+const DivPlaylist = styled.div`
+  .bold {
+    font-weight: bold;
+  }
+  .right {
+    float: right;
+  }
+  .ant-list {
+    background-color: #7e7b87;
+
+    margin-bottom: 15px;
+  }
+  .ant-list-header {
+    padding-top: 10px !important;
+  }
+
+  .playlist-more {
+    height: 30px;
+    width: 30px;
+    float: right;
+    border-radius: 30px;
+    padding-top: 8px;
+    .ant-popover-inner-content {
+      padding: 5px 5px !important;
+    }
+  }
+
+  .playlist-more:hover {
+    cursor: pointer;
+    background: #f0f2f5;
+  }
+
+  .post {
+    display: block;
+  }
+  .post:hover {
+    cursor: pointer;
+    background-color: ;
+  }
+  .inline {
+    display: inline;
+  }
+  .post-author {
+    color: #e8e9e5;
+  }
+  .post-description, .divider, .post-name {
+    color: #fffae7;
+  }
+`;
+
 const MoreActionDiv = styled.div`
   .more-action-item {
     width: 100%;
@@ -330,4 +330,4 @@ const MoreAction = ({ deletePlaylistWarning, editPlaylistModal }) => (
   </MoreActionDiv>
 );
 
-export default connect((state) => ({ playlists: state.playlists }))(Playlist);
+export default connect((state) => ({ playlists: state.playlists }))(OwnPlaylist);

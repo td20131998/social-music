@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Input, Col, Row, Layout, Avatar, Dropdown, Menu } from "antd";
 import {
   BellFilled,
@@ -16,14 +16,13 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { apiGetPlaylistUser } from "services/playlist/api";
 import { initPlaylistUser } from "services/playlist/actions";
-import { setAuthenticate } from "services/user/actions";
+import { setAuthenticate, setUserVisiting } from "services/user/actions";
 import Player from "components/Player";
 import { resetToken } from "common/jwt";
 import UserNotFound from "components/UserNotFound";
-import { apiGetUserInfoByUsername } from 'services/user/api'
+import { apiGetUserInfoByUsername } from "services/user/api";
 
 const { Header, Footer, Content } = Layout;
-
 const RootLayout = ({ userInfo, dispatch }) => {
   useEffect(() => {
     apiGetPlaylistUser().then((playlists) => {
@@ -46,7 +45,7 @@ const RootLayout = ({ userInfo, dispatch }) => {
           >
             <Col xs={3} sm={2} md={2} lg={2}>
               <div className="header-item">
-                <Link to="/">
+                <Link to="/discover">
                   <AntCloudOutlined
                     alt="Logo"
                     style={{ fontSize: "50px", color: "#E82C49" }}
@@ -68,7 +67,7 @@ const RootLayout = ({ userInfo, dispatch }) => {
 
             <Col xs={0} sm={0} md={4} lg={3}>
               <div className="header-item">
-                <Link to="/">Trang chủ</Link>
+                <Link to="/discover">Trang chủ</Link>
               </div>
             </Col>
 
@@ -125,9 +124,10 @@ const RootLayout = ({ userInfo, dispatch }) => {
         </Header>
         <Content className="content">
           <Switch>
+            <Redirect exact from="/" to="discover" />
+            <Route path="/discover" component={Home} />
             <Route exact path="/notfound" component={UserNotFound} />
             <Route exact path="/:username" component={Wall} />
-            <Route component={Home} />
           </Switch>
         </Content>
         <Footer className="footer">

@@ -1,7 +1,7 @@
 import React from "react";
 import { Col, Row } from "antd";
 import { Route } from "react-router-dom";
-import Playlist from "components/Playlist";
+import OwnPlaylist from "components/Playlist";
 import LikedList from "./components/LikedList";
 import Category from "./components/Category";
 import PopularList from "./components/PopularList";
@@ -29,19 +29,19 @@ const Home = function () {
         </Col>
 
         <Col xs={24} md={15} lg={15} xl={14} className="home-content">
-          <Route exact path="/">
+          <Route exact path="/discover">
             <PostList getListPost={apiGetListPost} />
           </Route>
 
-          <Route path="/upload" component={Upload} />
+          <Route path="/discover/upload" component={Upload} />
 
-          <Route path="/playlist" component={Playlist} />
+          <Route path="/discover/playlist" component={OwnPlaylist} />
 
-          <Route path="/liked" component={LikedList} />
+          <Route path="/discover/liked" component={LikedList} />
 
-          <Route path="/popular" component={PopularList} />
+          <Route path="/discover/popular" component={PopularList} />
 
-          <Route path="/category" component={Category} />
+          <Route path="/discover/category" component={Category} />
         </Col>
 
         <Col xs={0} md={5} lg={5} xl={5} className="home-right">
