@@ -1,5 +1,4 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React, { useState, useEffect, useRef } from "react";
 import WaveSurfer from "wavesurfer.js";
 import styled from "styled-components";
 import { getToken } from "common/jwt";
@@ -11,121 +10,124 @@ import {
   StepForwardOutlined,
   QuestionCircleOutlined,
   RetweetOutlined,
+  UnorderedListOutlined
 } from "@ant-design/icons";
-import { playnext, playprevious, playorpause } from "services/player/actions";
-import { message } from 'antd'
+import { playnext, playprevious, playorpause, play, pause } from "services/player/actions";
+import { message, Drawer } from "antd";
 
-class Player extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
+const Player = function ({ playing, playingIndex, playlist, dispatch }) {
+  const refPlayer = useRef();
+  const [player, setPlayer] = useState(null);
+  const [visiblePlaylist, setVisiblePlaylist] = useState(false)
 
-    this.handlePlay = this.handlePlay.bind(this);
-    this.next = this.next.bind(this);
-    this.load = this.load.bind(this);
-    this.previous = this.previous.bind(this);
-    this.onReady = this.onReady.bind(this)
-  }
-
-  componentDidMount() {
-    const { playingIndex, playlist } = this.props;
-    this.$el = ReactDOM.findDOMNode(this);
-    this.$player = this.$el.querySelector("#player");
-    this.player = WaveSurfer.create({
-      waveColor: "violet",
-      progressColor: "purple",
-      barWidth: 2,
-      barHeight: 0.5,
-      barGap: 1,
-      cursorWidth: 1,
-      container: this.$player,
-      backend: "WebAudio",
-      height: 80,
-      responsive: true,
-      cursorColor: "transparent",
-      hideScrollbar: true,
-      xhr: {
-        requestHeaders: [
-          {
-            key: "Authorization",
-            value: `Bearer ${getToken()}`,
-          },
-        ],
-      },
-    });
-    if (playlist.length > 0) {
-      console.log('duongdeptrai')
-      this.load(playlist[playingIndex]);
+  useEffect(() => {
+    if (refPlayer.current) {
+      setPlayer(
+        WaveSurfer.create({
+          waveColor: "violet",
+          progressColor: "purple",
+          barWidth: 2,
+          barHeight: 0.5,
+          barGap: 1,
+          cursorWidth: 1,
+          container: refPlayer.current,
+          backend: "WebAudio",
+          height: 80,
+          responsive: true,
+          cursorColor: "transparent",
+          hideScrollbar: true,
+          xhr: {
+            requestHeaders: [
+              {
+                key: "Authorization",
+                value: `Bearer ${getToken()}`,
+              },
+            ],
+          }
+        })
+      );
     }
-  }
-
-  load(audio) {
-    this.player.load(`http://localhost:8080/api/songs/${audio}`);
-  }
-
-  onReady(doNext) {
-    this.player.on('ready', doNext)
-  }
-
-  next() {
-    const { dispatch, playlist, playingIndex } = this.props
     if (playlist.length > 0) {
-      dispatch(playnext())
-      this.load(playlist[playingIndex])
-      // this.onReady(dispatch(playorpause))
+      player.load(playlist[playingIndex]);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (playlist.length > 0) {
+      load(playlist[playingIndex]);
+      player.on('ready', () => {
+        console.log('ready')
+        dispatch(play())
+        player.play()
+      })
+      player.on('finish', () => {
+        if (playlist.length > 1) {
+          next()
+        } else {
+          player.stop()
+          dispatch(pause())
+        }
+      })
+      player.on('loading', () => {
+        console.log('loading')
+      })
+    }
+  }, [playingIndex, playlist]);
+
+  function load(audio) {
+    player.load(`http://localhost:8080/api/songs/${audio}`);
+  }
+
+  function next() {
+    if (playlist.length > 0) {
+      dispatch(playnext());
     } else {
-      message.info('Playlist rỗng!')
+      message.info("Playlist rỗng!");
     }
   }
 
-  previous() {
-    const { dispatch, playlist, playingIndex } = this.props
+  function previous() {
     if (playlist.length > 0) {
-      dispatch(playprevious())
-      this.load(playlist[playingIndex])
-      this.setState({ playing: true })
+      dispatch(playprevious());
     } else {
-      message.info("Playlist rỗng!")
+      message.info("Playlist rỗng!");
     }
   }
 
-  handlePlay() {
-    const { dispatch } = this.props
-    // this.onReady(() => {
-      this.player.playPause()
-      dispatch(playorpause())
-      
-    // })
-    // this.player.playPause()
-    console.log(this.props)
+  function handlePlay() {
+    player.playPause();
+    dispatch(playorpause());
   }
 
-  render() {
-    console.log(this.props)
-    const { playing } = this.props
-    return (
-      <PlayerDiv>
-        <StepBackwardOutlined className="another" onClick={this.previous} />
-        {!playing ? (
-          <PlayCircleOutlined
-            onClick={this.handlePlay}
-            className="play-pause"
-          />
-        ) : (
-          <PauseCircleOutlined
-            onClick={this.handlePlay}
-            className="play-pause"
-          />
-        )}
-        <StepForwardOutlined className="another" onClick={this.next} />
-        <QuestionCircleOutlined className="another" />
-        <RetweetOutlined className="another" />
-        <Wave id="player" />
-      </PlayerDiv>
-    );
+  function togglePlaylist() {
+    setVisiblePlaylist(!visiblePlaylist)
   }
-}
+
+  return (
+    <PlayerDiv>
+      <StepBackwardOutlined className="another" onClick={previous} />
+      {!playing ? (
+        <PlayCircleOutlined onClick={handlePlay} className="play-pause" />
+      ) : (
+        <PauseCircleOutlined onClick={handlePlay} className="play-pause" />
+      )}
+      <StepForwardOutlined className="another" onClick={next} />
+      <QuestionCircleOutlined className="another" />
+      <RetweetOutlined className="another" />
+      <UnorderedListOutlined className="another" onClick={togglePlaylist} />
+      <Wave ref={refPlayer} />
+      <Drawer 
+        title="Danh sách phát"
+        placement="right"
+        closable={false}
+        onClose={togglePlaylist}
+        visible={visiblePlaylist}
+      >
+        {playlist.map(post => <div>{post}</div>)}
+      </Drawer>
+    </PlayerDiv>
+  );
+};
 
 const PlayerDiv = styled.div`
   background-color: #2d1653;
@@ -159,5 +161,5 @@ const Wave = styled.div`
 export default connect((state) => ({
   playlist: state.player.stack,
   playingIndex: state.player.playingIndex,
-  playing: state.player.playing
+  playing: state.player.playing,
 }))(Player);

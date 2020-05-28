@@ -19,6 +19,7 @@ import { apiGetListPostLikedByUser } from "services/post/api";
 import { connect } from "react-redux";
 import { apiGetUserInfoByUsername } from "services/user/api";
 import { apiFollow, apiUnfollow } from "services/follow/api";
+import { Link } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -113,27 +114,31 @@ const Wall = function ({ loginedUser, match: { params } }) {
                 <Row gutter={16}>
                   {followers.map((follower) => (
                     <Col span={6}>
-                      <Avatar
-                        shape="square"
-                        src={`http://localhost:8080/photos/${follower.user.avatar}`}
-                        size={64}
-                      />
-                      <div>{follower.user.username}</div>
+                      <Link to={`/${follower.user.username}`}>
+                        <Avatar
+                          shape="square"
+                          src={`http://localhost:8080/photos/${follower.user.avatar}`}
+                          size={64}
+                        />
+                        <div>{follower.user.username}</div>
+                      </Link>
                     </Col>
                   ))}
                 </Row>
               </div>
               <div>
-              <span>Following</span>
+                <span>Following</span>
                 <Row gutter={16}>
                   {followings.map((following) => (
                     <Col span={6}>
-                      <Avatar
-                        shape="square"
-                        src={`http://localhost:8080/photos/${following.follower.avatar}`}
-                        size={64}
-                      />
-                      <div>{following.follower.username}</div>
+                      <Link to={`/${following.follower.username}`}>
+                        <Avatar
+                          shape="square"
+                          src={`http://localhost:8080/photos/${following.follower.avatar}`}
+                          size={64}
+                        />
+                        <div>{following.follower.username}</div>
+                      </Link>
                     </Col>
                   ))}
                 </Row>
