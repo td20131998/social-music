@@ -1,22 +1,19 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import { apiGetPopularPosts } from "services/post/api";
+import Post from "components/Post";
 
-class PopularList extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {}
-    }
+const PopularList = function () {
+  const [popularPosts, setPopularPosts] = useState([]);
+  useEffect(() => {
+    apiGetPopularPosts().then((populars) => setPopularPosts(populars));
+  }, []);
+  return (
+    <div>
+      {popularPosts.map((post) => (
+        <Post key={post._id} info={post} />
+      ))}
+    </div>
+  );
+};
 
-    render() {
-        return (
-            <div>
-                <ul>
-                    <li>Popular 1</li>
-                    <li>Popular 2</li>
-                    <li>Popular 3</li>
-                </ul>
-            </div>
-        )
-    }
-}
-
-export default PopularList
+export default PopularList;

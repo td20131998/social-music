@@ -1,9 +1,31 @@
-import request from 'common/request'
+import request from "common/request";
 
-export function getMusic(source) {
-    return request({
-        url: `/api/songs/${source}/play`,
-        method: 'get',
-        // responseType: 'arrayBuffer',
-    })
+const SONG = "/api/songs"
+export function apiGetMusic(source) {
+  return request({
+    url: `${SONG}/${source}/play`,
+    method: "get",
+    // responseType: 'arrayBuffer',
+  });
+}
+
+export function apiUploadMusic(file, config) {
+  let formData = new FormData();
+  formData.append("file", file);
+  return request({
+    url: `${SONG}/upload`,
+    method: "post",
+    data: formData,
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+    ...config,
+  });
+}
+
+export function apiRemoveMusic(name) {
+  return request({
+    url: `${SONG}/${name}`,
+    method: "delete",
+  });
 }

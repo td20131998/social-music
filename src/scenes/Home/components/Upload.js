@@ -1,7 +1,8 @@
 import React from "react";
 import { Upload as UploadAntd, Form, Input, Button, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
-import { apiUploadMusic, apiCreatePost, apiRemoveMusic } from "services/post/api";
+import { apiUploadMusic, apiRemoveMusic } from "services/song/api";
+import { apiCreatePost } from 'services/post/api'
 import styled from "styled-components";
 
 const { Dragger } = UploadAntd;

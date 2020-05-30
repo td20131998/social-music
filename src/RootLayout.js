@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Input, Col, Row, Layout, Avatar, Dropdown, Menu } from "antd";
 import {
   BellFilled,
@@ -16,14 +16,15 @@ import styled from "styled-components";
 import { connect } from "react-redux";
 import { apiGetPlaylistUser } from "services/playlist/api";
 import { initPlaylistUser } from "services/playlist/actions";
-import { setAuthenticate, setUserVisiting } from "services/user/actions";
+import { setAuthenticate } from "services/user/actions";
 import Player from "components/Player";
 import { resetToken } from "common/jwt";
-import UserNotFound from "components/UserNotFound";
-import { apiGetUserInfoByUsername } from "services/user/api";
+import NotFound from "scenes/NotFound";
+import Settings from 'scenes/Settings'
 
 const { Header, Footer, Content } = Layout;
 const RootLayout = ({ userInfo, dispatch }) => {
+  console.log(userInfo)
   useEffect(() => {
     apiGetPlaylistUser().then((playlists) => {
       dispatch(initPlaylistUser(playlists));
@@ -75,7 +76,7 @@ const RootLayout = ({ userInfo, dispatch }) => {
               <div className="header-item">
                 <Link to={`/${userInfo.username}`}>
                   <Avatar size="small" icon={<UserOutlined />} />{" "}
-                  {userInfo.username}
+                  {userInfo.fullName.split(" ").pop()}
                 </Link>
               </div>
             </Col>
@@ -101,7 +102,7 @@ const RootLayout = ({ userInfo, dispatch }) => {
                 <Dropdown
                   overlay={
                     <Menu>
-                      <Menu.Item key="0">3rd menu item</Menu.Item>
+                      <Menu.Item key="0"><Link to="/settings">Cài đặt</Link></Menu.Item>
                       <Menu.Item key="1">2nd menu item</Menu.Item>
                       <Menu.Divider />
                       <Menu.Item
@@ -126,7 +127,8 @@ const RootLayout = ({ userInfo, dispatch }) => {
           <Switch>
             <Redirect exact from="/" to="discover" />
             <Route path="/discover" component={Home} />
-            <Route exact path="/notfound" component={UserNotFound} />
+            <Route exact path="/settings" component={Settings} />
+            <Route exact path="/notfound" component={NotFound} />
             <Route exact path="/:username" component={Wall} />
           </Switch>
         </Content>

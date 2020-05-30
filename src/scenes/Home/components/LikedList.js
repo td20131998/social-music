@@ -1,20 +1,20 @@
-import React from 'react'
+import React, { useState, useEffect } from "react";
+import { apiGetListPostLikedByUser } from "services/post/api";
+import Post from 'components/Post'
 
-class LikedList extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {}
-    }
+const LikedList = function () {
+  const [page, setPage] = useState(1);
+  const [likedPosts, setLikedPosts] = useState([]);
+  useEffect(() => {
+    apiGetListPostLikedByUser(page).then(posts => {
+        setLikedPosts(posts)
+    })
+  }, []);
+  return (
+    <div>
+        {likedPosts.map(post => <Post key={post._id} info={post} />)}
+    </div>
+  );
+};
 
-    render() {
-        return (
-            <div>
-                <li>Liked 1</li>
-                <li>Liked 2</li>
-                <li>Liked 3</li>
-            </div>
-        )
-    }
-}
-
-export default LikedList
+export default LikedList;

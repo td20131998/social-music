@@ -26,17 +26,15 @@ const Login = function ({ dispatch, from, history }) {
       if (res.status !== 1) {
         message.error("Login failed!")
       } else {
-        const token = res.result.token;
+        const { userInfo, token } = res.result
         setToken(token);
-        let decodedJwt = decodeJwt();
 
-        if (decodedJwt && decodedJwt.userInfo) {
-          delete decodedJwt.userInfo.comments;
-          delete decodedJwt.userInfo.likes;
-          delete decodedJwt.userInfo.password;
-        }
-
-        dispatch(initUserInfo(decodedJwt.userInfo));
+        delete userInfo.posts
+        delete userInfo.likes
+        delete userInfo.password
+        
+        localStorage.setItem('userInfo', JSON.stringify(userInfo))
+        dispatch(initUserInfo(userInfo))
         dispatch(setAuthenticate(true));
 
         if (from) {

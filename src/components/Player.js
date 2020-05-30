@@ -36,6 +36,7 @@ const Player = function ({ playing, playingIndex, playlist, dispatch }) {
           responsive: true,
           cursorColor: "transparent",
           hideScrollbar: true,
+          scrollParent: false,
           xhr: {
             requestHeaders: [
               {

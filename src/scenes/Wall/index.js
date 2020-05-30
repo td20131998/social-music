@@ -87,7 +87,7 @@ const Wall = function ({ loginedUser, match: { params } }) {
                 size={100}
                 style={{ border: "3px solid white" }}
               />
-              <div>{userInfo.username}</div>
+              <div>{userInfo.fullName}</div>
             </div>
           </Row>
           <ConnectionDiv isLoginedUser={isLoginedUser}>

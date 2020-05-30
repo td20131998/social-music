@@ -24,3 +24,9 @@ export function apiFollowersOfUser(userId) {
     method: "get",
   });
 }
+
+export function apiSuggestFollow() {
+  return request({
+    url: `${FOLLOW}/suggest`
+  })
+}

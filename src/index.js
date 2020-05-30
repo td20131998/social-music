@@ -10,7 +10,9 @@ import rootReducer from './rootReducer'
 import thunk from 'redux-thunk'
 
 const store = createStore(rootReducer, applyMiddleware(thunk))
-
+store.subscribe(() => {
+  localStorage.setItem("userInfo", JSON.stringify(store.getState().user.info))
+})
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>
