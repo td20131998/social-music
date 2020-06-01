@@ -43,7 +43,6 @@ class Upload extends React.Component {
     apiUploadMusic(file, config)
       .then((post) => {
         if (post) {
-          // console.log(post)
           this.setState({ filename: post.filename })
           onSuccess('post');
         }
@@ -56,8 +55,6 @@ class Upload extends React.Component {
   }
 
   removeSong() {
-    // console.log(this.state.filename)
-    // removeMusic(file)
     apiRemoveMusic(this.state.filename).then(res => {
       if (res === 'success') {
         this.setState({ files: [], filename: null })
@@ -82,7 +79,6 @@ class Upload extends React.Component {
       src: this.state.filename,
       description: description
     }
-    console.log(data)
     apiCreatePost(data).then(res => {
       if (res.src) {
         this.setState({ files: [], filename: null })
@@ -103,7 +99,7 @@ class Upload extends React.Component {
           fileList={this.state.files}
           customRequest={this.uploadSong}
           onChange={this.onChange}
-          multiple={true}
+          multiple={false}
           onRemove={this.removeSong}
         >
           <p className="ant-upload-drag-icon">

@@ -1,29 +1,32 @@
 import React from "react";
 import { Comment as Cm, Avatar, Tooltip } from "antd";
+import { Link } from 'react-router-dom'
 import moment from "moment";
+import getPublicImage from 'common/getPublicImage'
 
-const Comment = ({ content, author }) => {
+const Comment = function({ info }) {
+  const createdTime = moment(info.created_at)  
   return (
     <Cm
       actions={[
-        <span key="comment-basic-reply-to">Reply</span>
+        // <span key="comment-basic-reply-to">Reply</span>
       ]}
-      author={<a>{author.username}</a>}
+      author={<Link to={`/${info.user.username}`}>{info.user.fullName}</Link>}
       avatar={
         <Avatar
-          src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
-          alt={author.username}
+          src={getPublicImage(info.user.avatar)}
+          alt={info.user.username}
           size='small'
         />
       }
       content={
         <p>
-          {content}
+          {info.content}
         </p>
       }
       datetime={
-        <Tooltip title={moment().format("YYYY-MM-DD HH:mm:ss")}>
-          <span>{moment().fromNow()}</span>
+        <Tooltip title={moment(createdTime).format("HH:mm:ss DD-MM-YYYY")}>
+          <span>{moment(createdTime).fromNow()}</span>
         </Tooltip>
       }
     />

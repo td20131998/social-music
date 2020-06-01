@@ -13,7 +13,6 @@ const PostList = function ({ getListPost, userId }) {
 
   useEffect(() => {
     const data = { userId: userId, page: 1 }
-    console.log(data)
     getListPost(data).then((listPost) => setPosts(listPost));
   }, []);
 

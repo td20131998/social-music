@@ -7,9 +7,10 @@ import {
   Space,
   Avatar,
   Tabs,
-  message,
   notification,
+  Upload,
 } from "antd";
+import { CameraOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 import OwnPlaylist from "components/Playlist";
 import OtherPlaylist from "./components/Playlist";
@@ -20,6 +21,7 @@ import { connect } from "react-redux";
 import { apiGetUserInfoByUsername } from "services/user/api";
 import { apiFollow, apiUnfollow } from "services/follow/api";
 import { Link } from "react-router-dom";
+import getPublicImage from "common/getPublicImage";
 
 const { TabPane } = Tabs;
 
@@ -31,19 +33,38 @@ const Wall = function ({ loginedUser, match: { params } }) {
   const [isFollow, setIsFollow] = useState(false);
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
+  const [cover, setCover] = useState(null);
+  const [avatar, setAvatar] = useState(null);
   const isLoginedUser = username === loginedUser.username;
-
+  console.log("isLoginedUser: ", isLoginedUser);
   useEffect(() => {
     apiGetUserInfoByUsername(username).then((user) => {
-      const { posts, playlists, isFollow, followers, following } = user;
+      const {
+        posts,
+        playlists,
+        isFollow,
+        followers,
+        following,
+        cover,
+        avatar,
+      } = user;
       setUserInfo(user);
-      setPosts(posts);
+      setPosts(
+        posts.map((post) => ({
+          ...post,
+          user: { username: username, fullName: user.fullName },
+        }))
+      );
       setPlaylists(playlists);
       setIsFollow(isFollow);
       setFollowers(followers);
       setFollowings(following);
+      setCover(cover);
+      setAvatar(avatar);
     });
   }, [username]);
+
+  useEffect(() => {}, [cover]);
 
   function follow(userId) {
     apiFollow(userId).then((follow) => {
@@ -67,23 +88,43 @@ const Wall = function ({ loginedUser, match: { params } }) {
     });
   }
 
+  function handlePreview() {}
+  function handleChange() {}
   return (
     <DivWall>
       <Row justify="center">
         <Card
           className="wall-cover"
           cover={
-            <img
-              className="img-cover"
-              alt="cover_username"
-              src={`http://localhost:8080/photos/${userInfo.cover}`}
-            />
+            <div className="wrapper-img">
+              <img
+                className="img-cover"
+                alt="cover_username"
+                src={getPublicImage(cover)}
+              />
+              {isLoginedUser ? (
+                <Upload
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  // listType="none"
+                  onPreview={handlePreview}
+                  onChange={handleChange}
+                >
+                  <Button
+                    shape="round"
+                    className="image-edit"
+                    icon={<CameraOutlined />}
+                  >
+                    Đổi ảnh bìa
+                  </Button>
+                </Upload>
+              ) : null}
+            </div>
           }
         >
           <Row justify="center" style={{ marginTop: "-80px" }}>
             <div style={{ width: "200px", textAlign: "center" }}>
               <Avatar
-                src={`http://localhost:8080/photos/${userInfo.avatar}`}
+                src={getPublicImage(avatar)}
                 size={100}
                 style={{ border: "3px solid white" }}
               />
@@ -186,10 +227,29 @@ const DivWall = styled.div`
   .wall-cover {
     width: 70%;
   }
+  .wrapper-img {
+    position: relative;
+  }
+  .wrapper-img:hover {
+    .image-edit {
+      display: inline-block;
+    }
+  }
   .img-cover {
     width: 100%;
     height: 200px;
     object-fit: cover;
+  }
+  .image-edit {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    // font-size: 40px;
+    // color: white;
+    display: none;
+  }
+  .ant-upload-list-item-info, ant-upload-list-item ant-upload-list-item-done ant-upload-list-item-list-type-text {
+    display: none;
   }
   .ant-card-meta {
     margin: -70px 0;

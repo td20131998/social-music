@@ -7,6 +7,7 @@ import { apiLogin } from "services/user/api";
 import { connect } from "react-redux";
 import { initUserInfo, setAuthenticate } from "services/user/actions";
 import { setToken, decodeJwt } from "common/jwt";
+import socket from 'common/socketio'
 
 const { Item } = Form;
 
@@ -27,6 +28,7 @@ const Login = function ({ dispatch, from, history }) {
         message.error("Login failed!")
       } else {
         const { userInfo, token } = res.result
+        socket.emit("user active", userInfo._id)
         setToken(token);
 
         delete userInfo.posts

@@ -1,8 +1,7 @@
 import React from "react";
 import { Modal, Input, List, Button } from "antd";
 import { CommentOutlined } from "@ant-design/icons";
-import { addComment } from "services/comment/api";
-import { getListComment } from "services/comment/api";
+import { apiAddComment, apiGetListComment } from "services/comment/api";
 import Comment from "./Comment";
 import { connect } from "react-redux";
 
@@ -28,7 +27,7 @@ class CommentAction extends React.Component {
   }
 
   handleSubmitComment() {
-    addComment(this.props.postId, { content: this.state.commentText }).then(
+    apiAddComment(this.props.postId, { content: this.state.commentText }).then(
       (comment) => {
         if (comment._id) {
           comment.user = this.props.user;
@@ -48,7 +47,7 @@ class CommentAction extends React.Component {
   }
 
   showComments() {
-    getListComment(this.props.postId, this.state.page).then((comments) => {
+    apiGetListComment(this.props.postId, this.state.page).then((comments) => {
       this.setState({
         visible: true,
         comments: [...this.state.comments, ...comments],
@@ -61,7 +60,7 @@ class CommentAction extends React.Component {
       {
         page: this.state.page + 1,
       },
-      () => getListComment(this.props.postId, this.state.page).then(comments => {
+      () => apiGetListComment(this.props.postId, this.state.page).then(comments => {
         this.setState({
           comments: [...comments, ...this.state.comments]
         })
@@ -104,7 +103,7 @@ class CommentAction extends React.Component {
             dataSource={this.state.comments}
             renderItem={(cmt) => (
               <Item>
-                <Comment content={cmt.content} author={cmt.user} />
+                <Comment info={cmt} />
               </Item>
             )}
           />
