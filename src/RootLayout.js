@@ -21,15 +21,22 @@ import Player from "components/Player";
 import { resetToken } from "common/jwt";
 import NotFound from "scenes/NotFound";
 import Settings from 'scenes/Settings'
+import socket from 'common/socketio'
 
 const { Header, Footer, Content } = Layout;
 const RootLayout = ({ userInfo, dispatch }) => {
-  console.log(userInfo)
   useEffect(() => {
+    console.log(userInfo)
+    const { _id, username } = userInfo
+    socket.emit("user active", { _id, username })
     apiGetPlaylistUser().then((playlists) => {
       dispatch(initPlaylistUser(playlists));
     });
   }, []);
+
+  // useEffect(() => {
+  //   socket.on("signal offer", a => console.log(a))
+  // }, [])
 
   function logout() {
     resetToken();
