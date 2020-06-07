@@ -32,7 +32,7 @@ const Stream = function ({ userInfo }) {
     socket.on("new_livestream", ({ host, streamId }) => {
       notification.info({
         placement: "topRight",
-        message: `new stream from ${host.username}`,
+        message: `${host.username} vừa bắt đầu buổi livestream!`,
         onClick: () => {
           console.log("play stream");
           // socket.emit("watch stream",);
@@ -61,6 +61,13 @@ const Stream = function ({ userInfo }) {
         rtcViewer.addIceCandidate(candidate);
       });
       socket.on("watch_stream_response", viewResponse);
+      socket.on("end_livestream", ({ host, streamId }) => {
+        notification.info({
+          placement: "topRight",
+          message: `${host.username} đã kết thúc buổi livestream!`
+        })
+        rtcViewer.dispose()
+      })
     }
   }, [rtcViewer]);
 
@@ -84,35 +91,12 @@ const Stream = function ({ userInfo }) {
     console.log("stop stream");
   }
 
-  function startOrEnd() {
+  function startLivestream() {
     setIsStreaming(true);
     const options = {
       localVideo: refVideo.current,
       onicecandidate: onIceCandidateStreamer,
     };
-
-    // try {
-    //   const webRtcPeerSendrecv = new WebRtcPeer.WebRtcPeerSendrecv(options)
-    //   console.log(webRtcPeerSendrecv)
-    //   setRtcStream(webRtcPeerSendrecv)
-
-    //   const offer = .generateOffer()
-    //   console.log(offer)
-    //   const streamInfo = {
-    //     host: {
-    //       id: userInfo._id,
-    //       avatar: userInfo.avatar,
-    //       username: userInfo.username,
-    //       followers: followers.map((follower) => follower.username),
-    //     },
-    //     offer
-    //   }
-    //   socket.emit("livestream", streamInfo)
-    // } catch (error) {
-    //   message.error(error)
-    // }
-
-
     setRtcStream(new WebRtcPeer.WebRtcPeerSendrecv(options, function(err) {
         if (err) message.error(err)
         this.generateOffer(function(error, offerSdp) {
@@ -163,7 +147,6 @@ const Stream = function ({ userInfo }) {
   }
 
   function onIceCandidateViewer(candidate) {
-    console.log("Viewer candidate: ", JSON.stringify(candidate))
     const candidateInfo = {
       id: userInfo._id,
       candidate
@@ -171,14 +154,23 @@ const Stream = function ({ userInfo }) {
     socket.emit("icecandidate_viewer", candidateInfo)
   }
 
+  function endLivestream() {
+    if (rtcStream) {
+      const host = userInfo
+      socket.emit("end_livestream", host)
+      rtcStream.dispose()
+      setRtcStream(null)
+      setIsStreaming(false)
+    }
+  }
   return (
     <>
-      <Button onClick={startOrEnd}>Connect</Button>
+      <Button onClick={startLivestream}>Connect</Button>
       <Modal
         visible={isStreaming}
         getContainer={false}
-        // onCancel={startOrEnd}
-        // onOk={startOrEnd}
+        onCancel={endLivestream}
+        onOk={endLivestream}
       >
         <video ref={refVideo} style={{ width: "100%" }} controls />
         <Button>Capture</Button>

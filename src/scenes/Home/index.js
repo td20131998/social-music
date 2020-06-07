@@ -9,7 +9,7 @@ import PostList from "components/PostList";
 import LeftSider from "./components/LeftSider";
 import RightSider from "./components/RightSider";
 import Upload from "./components/Upload";
-import Stream from './components/Stream2'
+import Stream from './components/Stream'
 import styled from "styled-components";
 import { apiGetListPost } from 'services/post/api'
 
