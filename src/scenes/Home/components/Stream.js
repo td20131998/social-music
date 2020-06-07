@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, notification } from "antd";
+import { Button, notification, Modal } from "antd";
 import socket from "common/socketio";
 import Peer from "peerjs";
-import { v4 as uuidv4 } from "uuid";
 import { connect } from "react-redux";
-import styled from "styled-components";
+import { apiGetFollowersOf, apiGetFollowingsOf } from "services/follow/api";
+import MyVideo from "components/MyVideo";
 
 const Stream = function ({ userInfo }) {
+  const [followers, setFollowers] = useState([]);
+  const [followings, setFollowings] = useState([]);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [streams, setStreams] = useState([]);
 
   const refVideo = useRef();
   const refVideo2 = useRef();
@@ -18,19 +21,30 @@ const Stream = function ({ userInfo }) {
   const [peer, setPeer] = useState(new Peer());
 
   useEffect(() => {
+    const { _id } = userInfo;
     if (refVideo.current && refVideo2.current) {
       setVideo(refVideo.current);
       setVideo2(refVideo2.current);
     }
+    apiGetFollowersOf(_id).then((followers) => {
+      setFollowers(followers.map((follower) => follower.user));
+    });
+
+    apiGetFollowingsOf(_id).then((followings) => {
+      setFollowings(followings.map((following) => following.follower));
+    });
   }, []);
 
   useEffect(() => {
+    const userId = userInfo._id
     peer.on("open", (id) => {
-      console.log(id)
-      socket.emit("new peer", { userId: userInfo._id, peerId: id });
+      console.log(id);
+      socket.emit("new peer", { userId, peerId: id });
 
       socket.on("new stream", (hostInfo) => {
+        console.log("new stream")
         const { peerId, hostId } = hostInfo;
+
         notification.info({
           placement: "topRight",
           message: `new stream from ${peerId}`,
@@ -42,22 +56,31 @@ const Stream = function ({ userInfo }) {
       });
     });
 
+    socket.emit("list livestream", followings.map(following => following.username));
+
+    socket.on("list livestream", (streamings) => {
+      console.log(streamings);
+      setStreams(streamings);
+    });
+
     peer.on("call", (call) => {
-      console.log("calling: ", call);
-      navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      }).then(stream => {
-        call.answer(stream)
-        
-        call.on("stream", (remoteStream) => {
-          console.log("streaming");
-          refVideo2.current.srcObject = remoteStream;
-          refVideo2.current.play();
+      navigator.mediaDevices
+        .getUserMedia({
+          audio: true,
+          video: true,
+        })
+        .then((stream) => {
+          console.log("streaming")
+          call.answer(stream);
+
+          call.on("stream", (remoteStream) => {
+            console.log("streaming");
+            refVideo2.current.srcObject = remoteStream;
+            refVideo2.current.play();
+          });
         });
-      })
-    });      
-  }, [peer])
+    });
+  }, [peer]);
 
   async function gotStream(stream) {
     console.log("Received local stream");
@@ -66,10 +89,13 @@ const Stream = function ({ userInfo }) {
     window.localStream = stream;
 
     socket.emit("new stream", {
-      hostId: userInfo._id,
       peerId: peer.id,
-      // followers: userInfo.followers,
-      followers: [`linhbui98`],
+      host: {
+        id: userInfo._id,
+        avatar: userInfo.avatar,
+        username: userInfo.username,
+        followers: followers.map((follower) => follower.username),
+      },
     });
 
     socket.on("request host call", (watcherId) => {
@@ -79,7 +105,6 @@ const Stream = function ({ userInfo }) {
   }
 
   function start() {
-    console.log("Requesting local stream");
     setIsStreaming(true);
     navigator.mediaDevices
       .getUserMedia({
@@ -90,17 +115,34 @@ const Stream = function ({ userInfo }) {
       .catch((e) => console.log("getUserMedia() error: ", e));
   }
 
+  function captureScreen() {
+    // const capture = await navigator.mediaDevices.getDisplayMedia({ video: true });
+  }
+
+  function stopStreaming() {
+    // video.srcObject.getTracks().forEach(t => t.enabled = !t.enabled)
+    window.localStream.getVideoTracks()[0].enabled = false
+  }
+
   return (
     <>
-      <video
-        ref={refVideo}
-        width="300"
-        controls
-        style={{ display: isStreaming ? "block" : "none" }}
-      />
       <Button onClick={start}>Connect</Button>
 
+      <Modal
+        visible={isStreaming}
+        getContainer={false}
+        onCancel={() => setIsStreaming(false)}
+        onOk={stopStreaming}
+      >
+        <video ref={refVideo} style={{ width: "100%" }} controls />
+        <Button onClick={captureScreen}>Capture</Button>
+      </Modal>
+
       <video ref={refVideo2} controls width="300" />
+
+      {streams.map((stream) => (
+        <MyVideo streamInfo={stream} peer={peer} />
+      ))}
     </>
   );
 };
