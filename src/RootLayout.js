@@ -26,17 +26,12 @@ import socket from 'common/socketio'
 const { Header, Footer, Content } = Layout;
 const RootLayout = ({ userInfo, dispatch }) => {
   useEffect(() => {
-    console.log(userInfo)
     const { _id, username } = userInfo
-    socket.emit("user active", { _id, username })
+    socket.emit("user_active", { _id, username })
     apiGetPlaylistUser().then((playlists) => {
       dispatch(initPlaylistUser(playlists));
     });
   }, []);
-
-  // useEffect(() => {
-  //   socket.on("signal offer", a => console.log(a))
-  // }, [])
 
   function logout() {
     resetToken();

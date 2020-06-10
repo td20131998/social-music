@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, List, Button, Empty, Divider, Input, message } from "antd";
-import { SaveOutlined, PlusSquareOutlined } from "@ant-design/icons";
+import { BookOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
 import { addPostToPlaylist } from "services/playlist/actions";
 import styled from "styled-components";
@@ -92,7 +92,7 @@ class PlaylistAction extends React.Component {
   render() {
     return (
       <>
-        <SaveOutlined onClick={this.showPlaylist} />
+        <BookOutlined onClick={this.showPlaylist} />
         <span className="count">{this.props.playlists.length}</span>
         <Modal
           visible={this.state.visible}

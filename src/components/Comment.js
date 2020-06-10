@@ -9,7 +9,6 @@ const Comment = function({ info }) {
   return (
     <Cm
       actions={[
-        // <span key="comment-basic-reply-to">Reply</span>
       ]}
       author={<Link to={`/${info.user.username}`}>{info.user.fullName}</Link>}
       avatar={

@@ -4,20 +4,22 @@ import {
   PLAY_PREVIOUS,
   PLAY_OR_PAUSE,
   PLAY,
-  PAUSE
+  PAUSE,
+  TOGGLE_PLAYER_VISIBLE
 } from "./actions";
 
 const inittialState = {
   stack: [],
   playingIndex: 0,
   playing: false,
+  visible: true,
 };
 
 export default function playerReducer(state = inittialState, action) {
-  const { stack, playingIndex } = state;
+  const { stack, playingIndex, visible } = state;
   switch (action.type) {
     case ADD_TO_STACK_PLAYLIST:
-      return { stack: [action.audio, ...state.stack], playingIndex: 0 };
+      return { stack: [action.audio, ...state.stack], playingIndex: 0, visible };
 
     case PLAY_NEXT:
       return {
@@ -38,6 +40,9 @@ export default function playerReducer(state = inittialState, action) {
 
     case PAUSE:
       return { ...state, playing: false };
+    
+    case TOGGLE_PLAYER_VISIBLE:
+      return { ...state, visible: !visible, playing: false }
 
     default:
       return state;

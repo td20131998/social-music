@@ -6,7 +6,7 @@ import {
   HeartOutlined,
   NodeIndexOutlined,
   SettingOutlined,
-  VideoCameraAddOutlined
+  VideoCameraOutlined
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
@@ -52,7 +52,7 @@ const DivLeftSider = styled.div`
 `;
 const LeftSider = () => (
   <DivLeftSider>
-    <Menu className="left-sider" defaultSelectedKeys={["1"]} mode="inline">
+    <Menu className="left-sider" mode="inline">
       <Item key="1">
         <Link to="/discover/upload">
           <CloudUploadOutlined />
@@ -62,7 +62,7 @@ const LeftSider = () => (
 
       <Item key="2">
         <Link to="/discover/stream">
-          <VideoCameraAddOutlined />
+        <VideoCameraOutlined />
           Stream
         </Link>
       </Item>

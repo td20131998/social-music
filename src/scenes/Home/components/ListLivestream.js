@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { notification, message } from "antd";
 import Livestream from "./Livestream";
 import socket from "common/socketio";
 import { connect } from "react-redux";
 import { WebRtcPeer } from "kurento-utils";
+import { togglePlayerVisible } from 'services/player/actions'
 
-const ListLivestream = function ({ userInfo }) {
+const ListLivestream = function ({ userInfo, dispatch }) {
   const [livestreams, setLivestreams] = useState([]);
 
   const [rtcViewer, setRtcViewer] = useState(null);
+
+  const [isWatch, setIsWatch] = useState(false)
+  const [currentHost, setCurrentHost] = useState(null)
 
   useEffect(() => {
     const { _id } = userInfo;
@@ -57,10 +61,14 @@ const ListLivestream = function ({ userInfo }) {
     }
   }
 
-  function watchLivestream(hostId, refLivestream) {
+  function watchLivestream(host, refLivestream) {
+    dispatch(togglePlayerVisible())
     if (rtcViewer) {
         rtcViewer.dispose()
+        setRtcViewer(null)
     }
+    setIsWatch(true)
+    setCurrentHost(host)
     const options = {
       remoteVideo: refLivestream.current,
       onicecandidate: onIceCandidateViewer,
@@ -72,7 +80,6 @@ const ListLivestream = function ({ userInfo }) {
         },
       },
     };
-    refLivestream.current.oncanplay = () => refLivestream.current.play()
     setRtcViewer(
       new WebRtcPeer.WebRtcPeerRecvonly(options, function (err) {
         if (err) message.error(err);
@@ -84,7 +91,7 @@ const ListLivestream = function ({ userInfo }) {
               id: userInfo._id,
               username: userInfo.username,
             },
-            hostId,
+            hostId: host.hostId,
             offerSdp,
           };
           socket.emit("watch_livestream", viewerInfo);
@@ -101,6 +108,14 @@ const ListLivestream = function ({ userInfo }) {
     socket.emit("icecandidate_viewer", candidateInfo);
   }
 
+  function leaveLivestream() {
+    if (rtcViewer) {
+      rtcViewer.dispose()
+      setIsWatch(false)
+      dispatch(togglePlayerVisible())
+    }
+  }
+
   return (
     <>
       {livestreams.map((host) => (
@@ -108,6 +123,9 @@ const ListLivestream = function ({ userInfo }) {
           key={host.id}
           watchLivestream={watchLivestream}
           host={host}
+          userInfo={userInfo}
+          leaveLivestream={leaveLivestream}
+          isWatch={isWatch}
         />
       ))}
     </>

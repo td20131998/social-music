@@ -15,7 +15,7 @@ import {
 import { playnext, playprevious, playorpause, play, pause } from "services/player/actions";
 import { message, Drawer } from "antd";
 
-const Player = function ({ playing, playingIndex, playlist, dispatch }) {
+const Player = function ({ playing, playingIndex, playlist, visible, dispatch, streaming }) {
   const refPlayer = useRef();
   const [player, setPlayer] = useState(null);
   const [visiblePlaylist, setVisiblePlaylist] = useState(false)
@@ -75,6 +75,13 @@ const Player = function ({ playing, playingIndex, playlist, dispatch }) {
     }
   }, [playingIndex, playlist]);
 
+  useEffect(() => {
+    if (player && !visible) {
+      player.pause()
+      dispatch(pause())
+    }
+  }, [visible])
+
   function load(audio) {
     player.load(`http://localhost:8080/api/songs/${audio}`);
   }
@@ -105,7 +112,7 @@ const Player = function ({ playing, playingIndex, playlist, dispatch }) {
   }
 
   return (
-    <PlayerDiv>
+    <PlayerDiv visible={visible}>
       <StepBackwardOutlined className="another" onClick={previous} />
       {!playing ? (
         <PlayCircleOutlined onClick={handlePlay} className="play-pause" />
@@ -134,7 +141,7 @@ const PlayerDiv = styled.div`
   background-color: #2d1653;
   height: 60px;
   color: white;
-  display: flex;
+  display: ${props => props.visible ? 'flex' : 'none'};
   align-items: center;
   justify-content: center;
   .play-pause,
@@ -163,4 +170,6 @@ export default connect((state) => ({
   playlist: state.player.stack,
   playingIndex: state.player.playingIndex,
   playing: state.player.playing,
+  visible: state.player.visible,
+  streaming: state.stream.streaming
 }))(Player);

@@ -1,28 +1,29 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Button, notification, Modal, message } from "antd";
+import { message } from "antd";
 import socket from "common/socketio";
 import { connect } from "react-redux";
 import { apiGetFollowersOf, apiGetFollowingsOf } from "services/follow/api";
 import { WebRtcPeer } from "kurento-utils";
 import ListLivestream from "./ListLivestream";
+import styled from "styled-components";
+import { togglePlayerVisible } from "services/player/actions";
+import { VideoCameraAddOutlined } from "@ant-design/icons";
+import FullscreenLivestream from "./FullscreenLivestream";
+import captureVideoFrame from 'capture-video-frame'
 
-const Stream = function ({ userInfo }) {
+const Stream = function ({ userInfo, dispatch }) {
   const [isStreaming, setIsStreaming] = useState(false);
 
   const [rtcStream, setRtcStream] = useState(null);
-  const [rtcViewer, setRtcViewer] = useState(null);
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
 
-  const refLivestream = useRef();
-  // const refVideo2 = useRef();
+  const refStreaming = useRef();
+  const imgRef = useRef()
+
   useEffect(() => {
     const { _id } = userInfo;
-    // if (refVideo.current && refVideo2.current) {
-    //   setVideo(refVideo.current);
-    //   setVideo2(refVideo2.current);
-    // }
     apiGetFollowersOf(_id).then((followers) => {
       setFollowers(followers.map((follower) => follower.user));
     });
@@ -38,7 +39,7 @@ const Stream = function ({ userInfo }) {
   useEffect(() => {
     if (rtcStream) {
       socket.on("ice_candidate_streamer", (candidate) => {
-        console.log("add candidate streamer: ", candidate);
+        // console.log("add candidate streamer: ", candidate);
         rtcStream.addIceCandidate(candidate);
       });
 
@@ -57,31 +58,46 @@ const Stream = function ({ userInfo }) {
   }
 
   function startLivestream() {
+    dispatch(togglePlayerVisible());
     setIsStreaming(true);
     const options = {
-      localVideo: refLivestream.current,
+      localVideo: refStreaming.current,
       onicecandidate: onIceCandidateStreamer,
+      dataChanels: true,
       mediaConstraints: {
         audio: true,
         video: {
-          width: 1000,
+          width: 1280,
+          height: 1000,
           framerate: 30,
         },
       },
     };
     setRtcStream(
       new WebRtcPeer.WebRtcPeerSendrecv(options, function (err) {
-        if (err) message.error(err);
-        refLivestream.current.play();
+        if (err) message.error(err.toString());
+        console.log(this);
+        refStreaming.current.play();
+        // const canvas = document.createElement("canvas")
+        // canvas.width = refStreaming.current.videoWidth
+        // canvas.height = refStreaming.current.videoHeight
+        // console.log(canvas.width)
+        // canvas.getContext("2d").drawImage(refStreaming.current, 0, 0)
+
+        // if (imgRef.current) {
+        //   imgRef.current.src = canvas.toDataURL("image/webp")
+        // }
+        // console.log(img)
         this.generateOffer(function (error, offerSdp) {
-          if (error) console.log(error);
+          console.log(this);
+          if (error) message.error(error.toString());
           const streamInfo = {
             host: {
+              ...userInfo,
               id: userInfo._id,
-              avatar: userInfo.avatar,
-              username: userInfo.username,
               followers: followers.map((follower) => follower.username),
             },
+            // background: img,
             offerSdp,
           };
           socket.emit("livestream", streamInfo);
@@ -100,6 +116,7 @@ const Stream = function ({ userInfo }) {
 
   function endLivestream() {
     if (rtcStream) {
+      dispatch(togglePlayerVisible());
       const host = userInfo;
       socket.emit("end_livestream", host);
       rtcStream.dispose();
@@ -111,96 +128,41 @@ const Stream = function ({ userInfo }) {
    * @End_Handle_Streaming
    */
 
-  /**
-   * @Start_Handle_Watch_Livestream
-   */
-  // useEffect(() => {
-  //   if (rtcViewer) {
-  //     socket.on("ice_candidate_viewer", (candidate) => {
-  //       rtcViewer.addIceCandidate(candidate);
-  //     });
-  //     socket.on("watch_stream_response", viewResponse);
-  //     socket.on("end_livestream", ({ host, streamId }) => {
-  //       notification.info({
-  //         placement: "topRight",
-  //         message: `${host.username} đã kết thúc buổi livestream!`,
-  //       });
-  //       rtcViewer.dispose();
-  //     });
-  //   }
-  // }, [rtcViewer]);
-
-  // function viewResponse(mess) {
-  //   if (mess.result !== "accepted") {
-  //     message.error(`Watch livestream error: ${mess.error}`);
-  //   } else {
-  //     rtcViewer.processAnswer(mess.answer, (err) =>
-  //       err ? message.error(err) : null
-  //     );
-  //   }
-  // }
-
-  // function viewer(hostId) {
-  //   const options = {
-  //     remoteVideo: refVideo2.current,
-  //     onicecandidate: onIceCandidateViewer,
-  //     mediaConstraints: {
-  //       audio: true,
-  //       video: {
-  //         width: 500,
-  //         framerate: 30,
-  //       },
-  //     },
-  //   };
-  //   setRtcViewer(
-  //     new WebRtcPeer.WebRtcPeerRecvonly(options, function (err) {
-  //       if (err) message.error(err);
-  //       this.generateOffer(function (error, offerSdp) {
-  //         if (error) message.error(error);
-  //         const viewerInfo = {
-  //           viewer: {
-  //             id: userInfo._id,
-  //             username: userInfo.username,
-  //           },
-  //           hostId,
-  //           offerSdp,
-  //         };
-  //         socket.emit("view_livestream", viewerInfo);
-  //       });
-  //     })
-  //   );
-  // }
-
-  // function onIceCandidateViewer(candidate) {
-  //   const candidateInfo = {
-  //     id: userInfo._id,
-  //     candidate,
-  //   };
-  //   socket.emit("icecandidate_viewer", candidateInfo);
-  // }
-  /**
-   * @End_Handle_Watch_Livestream
-   */
-
   return (
     <>
-      <Button onClick={startLivestream}>Connect</Button>
-      <Modal
-        visible={isStreaming}
-        getContainer={false}
-        onCancel={endLivestream}
-        onOk={endLivestream}
-        width={window.innerWidth}
-      >
-        <video ref={refLivestream} style={{ width: "100%" }} controls />
-        <Button>Capture</Button>
-      </Modal>
+      <DivStream>
+        <div className="start-livestream" onClick={startLivestream}>
+          <VideoCameraAddOutlined style={{ fontSize: "40px" }} />
+          <span style={{ paddingLeft: "10px" }}>Bắt đầu Livestream</span>
+        </div>
+      </DivStream>
 
+      <FullscreenLivestream
+        onClose={endLivestream}
+        visible={isStreaming}
+        refStreaming={refStreaming}
+        userInfo={userInfo}
+        host={userInfo}
+      />
+      {/* <img ref={imgRef} /> */}
       <ListLivestream />
-      {/* <video ref={refVideo2} controls></video> */}
-      {/* <Button onClick={viewer}>Viewer</Button> */}
     </>
   );
 };
 
+const DivStream = styled.div`
+  height: 60px;
+  .start-livestream {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  .start-livestream:hover {
+    cursor: pointer;
+    background: #f0f2f5;
+  }
+`;
 export default connect((state) => ({ userInfo: state.user.info }))(Stream);
