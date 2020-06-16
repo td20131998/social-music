@@ -35,10 +35,12 @@ const Post = function ({ info, dispatch }) {
             likeCount={info.likes.length}
             postId={info._id}
             isLike={info.isLike}
+            author={info.user}
           />,
           <CommentAction
             commentCount={info.comments.length}
             postId={info._id}
+            author={info.user}
           />,
           <PlaylistAction postId={info._id} />,
         ]}

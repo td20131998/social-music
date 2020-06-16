@@ -1,22 +1,23 @@
 import request from 'common/request'
+const LIKE = "/api/likes"
 
-export function getListLike(postId, page) {
+export function apiGetListLike(postId, page) {
     return request({
-        url: `/api/likes/${postId}`,
+        url: `${LIKE}/${postId}`,
         method: 'get'
     })
 }
 
-export function likePost(id) {
+export function apiLikePost(id) {
     return request({
-        url: `/api/likes/${id}`,
+        url: `${LIKE}/${id}`,
         method: 'post'
     })
 }
 
-export function unlikePost(id) {
+export function apiUnlikePost(id) {
     return request({
-        url: `/api/likes/${id}`,
+        url: `${LIKE}/${id}`,
         method: 'delete'
     })
 }

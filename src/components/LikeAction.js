@@ -1,7 +1,9 @@
 import React from "react";
 import Heart from "./Heart";
-import { likePost, unlikePost, getListLike } from "services/likes/api";
-import { Modal, List, Avatar as Avt } from "antd";
+import { apiLikePost, apiUnlikePost, apiGetListLike } from "services/likes/api";
+import { Modal, List, Avatar as Avt, notification } from "antd";
+import socket from "common/socketio";
+import { connect } from "react-redux";
 
 const { Item } = List;
 
@@ -17,12 +19,35 @@ class LikeAction extends React.Component {
 
     this.toggleLove = this.toggleLove.bind(this);
     this.showLikes = this.showLikes.bind(this);
-    this.onCancel = this.onCancel.bind(this)
+    this.onCancel = this.onCancel.bind(this);
   }
+  componentDidMount() {
+    socket.on("user_like_post", ({ userLike, postId }) => {
+      if (postId == this.props.postId) {
+        this.setState({
+          likeCount: this.state.likeCount + 1,
+        });
 
+        notification.info({
+          placement: "topRight",
+          message: `${userLike.username} đã thích bài hát của bạn!`,
+        });
+      }
+    });
+
+    socket.on("user_unlike_post", ({ userUnlike, postId }) => {
+      if (postId == this.props.postId) {
+        this.setState({
+          likeCount: this.state.likeCount - 1,
+        })
+      }
+    })
+  }
   toggleLove(isLike) {
+    const { userInfo, postId, author } = this.props;
     if (isLike) {
-      unlikePost(this.props.postId).then((like) =>
+      socket.emit("user_unlike_post", { userUnlike: userInfo, postId, author })
+      apiUnlikePost(postId).then((like) =>
         like._id
           ? this.setState({
               isLike: !isLike,
@@ -31,7 +56,8 @@ class LikeAction extends React.Component {
           : null
       );
     } else {
-      likePost(this.props.postId).then((like) =>
+      socket.emit("user_like_post", { userLike: userInfo, postId, author });
+      apiLikePost(postId).then((like) =>
         like._id
           ? this.setState({
               isLike: !isLike,
@@ -43,7 +69,7 @@ class LikeAction extends React.Component {
   }
 
   showLikes() {
-    getListLike(this.props.postId).then((likes) => {
+    apiGetListLike(this.props.postId).then((likes) => {
       this.setState({
         visible: true,
         likes: [...this.state.likes, ...likes],
@@ -54,8 +80,8 @@ class LikeAction extends React.Component {
   onCancel() {
     this.setState({
       visible: false,
-      likes: []
-    })
+      likes: [],
+    });
   }
 
   render() {
@@ -86,7 +112,7 @@ class LikeAction extends React.Component {
             )}
           />
         </Modal>
-        </>
+      </>
     );
   }
 }
@@ -102,4 +128,4 @@ const Avatar = ({ author }) => (
   </>
 );
 
-export default LikeAction;
+export default connect((state) => ({ userInfo: state.user.info }))(LikeAction);
