@@ -1,26 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
-import { message } from "antd";
+import { message, Modal, Button } from "antd";
 import socket from "common/socketio";
 import { connect } from "react-redux";
 import { apiGetFollowersOf, apiGetFollowingsOf } from "services/follow/api";
 import { WebRtcPeer } from "kurento-utils";
-import ListLivestream from "./ListLivestream";
+import ListLivestream from "scenes/Home/components/ListLivestream";
 import styled from "styled-components";
 import { togglePlayerVisible } from "services/player/actions";
 import { VideoCameraAddOutlined } from "@ant-design/icons";
-import FullscreenLivestream from "./FullscreenLivestream";
-import captureVideoFrame from 'capture-video-frame'
+import FullscreenLivestream from "components/FullscreenLivestream";
+import { apiCreateStream } from "services/stream/api";
 
 const Stream = function ({ userInfo, dispatch }) {
   const [isStreaming, setIsStreaming] = useState(false);
+  const [confirmEndLivestream, setConfirmEndLivestream] = useState(false);
 
   const [rtcStream, setRtcStream] = useState(null);
+  const [streamInfo, setStreamInfo] = useState(null);
 
   const [followers, setFollowers] = useState([]);
   const [followings, setFollowings] = useState([]);
 
   const refStreaming = useRef();
-  const imgRef = useRef()
+  const imgRef = useRef();
 
   useEffect(() => {
     const { _id } = userInfo;
@@ -39,7 +41,7 @@ const Stream = function ({ userInfo, dispatch }) {
   useEffect(() => {
     if (rtcStream) {
       socket.on("ice_candidate_streamer", (candidate) => {
-        // console.log("add candidate streamer: ", candidate);
+        console.log("add candidate streamer: ", candidate);
         rtcStream.addIceCandidate(candidate);
       });
 
@@ -48,9 +50,11 @@ const Stream = function ({ userInfo, dispatch }) {
   }, [rtcStream]);
 
   function streamResponse(mess) {
+    console.log(mess);
     if (mess.result !== "accepted") {
       message.error(`Create livestream error: ${mess.error}`);
     } else {
+      setStreamInfo(mess.streamInfo);
       rtcStream.processAnswer(mess.answer, (err) =>
         err ? message.error(err) : null
       );
@@ -63,7 +67,6 @@ const Stream = function ({ userInfo, dispatch }) {
     const options = {
       localVideo: refStreaming.current,
       onicecandidate: onIceCandidateStreamer,
-      dataChanels: true,
       mediaConstraints: {
         audio: true,
         video: {
@@ -76,8 +79,10 @@ const Stream = function ({ userInfo, dispatch }) {
     setRtcStream(
       new WebRtcPeer.WebRtcPeerSendrecv(options, function (err) {
         if (err) message.error(err.toString());
-        console.log(this);
         refStreaming.current.play();
+        // refStreaming.current.ontimeupdate = event => {
+        //   console.log(refStreaming.current.currentTime)
+        // }
         // const canvas = document.createElement("canvas")
         // canvas.width = refStreaming.current.videoWidth
         // canvas.height = refStreaming.current.videoHeight
@@ -95,7 +100,7 @@ const Stream = function ({ userInfo, dispatch }) {
             host: {
               ...userInfo,
               id: userInfo._id,
-              followers: followers.map((follower) => follower.username),
+              followers: followers.map((follower) => follower._id),
             },
             // background: img,
             offerSdp,
@@ -114,15 +119,50 @@ const Stream = function ({ userInfo, dispatch }) {
     socket.emit("icecandidate_streamer", candidateInfo);
   }
 
-  function endLivestream() {
-    if (rtcStream) {
-      dispatch(togglePlayerVisible());
-      const host = userInfo;
-      socket.emit("end_livestream", host);
-      rtcStream.dispose();
-      setRtcStream(null);
-      setIsStreaming(false);
+  function endLivestream(isStoreLivestrem) {
+    if (rtcStream && isStoreLivestrem) {
+      console.log("store livestream");
+      socket.emit("end_livestream", {
+        host: userInfo,
+        isStore: true,
+      });
+
+      socket.on("livestream_comments", (commentTxts) => {
+        const comments = commentTxts.map(cmt => {
+          const { user, content, created_at } = JSON.parse(cmt)
+          return ({ userId: user._id, content, createdAt: created_at })
+        })
+        console.log(comments);
+        const data = {
+          host: userInfo._id,
+          src: streamInfo.streamId,
+          comments: comments,
+        };
+
+        apiCreateStream(data).then((stream) => {
+          if (stream && stream._id) {
+            message.success("Lưu livestream thành công!");
+            resetLivestream();
+          }
+        });
+      });
+    } else {
+      console.log("delete stream");
+      message.success("Đã kết thúc buổi livestream!");
+      socket.emit("end_livestream", {
+        host: userInfo,
+        isStore: false,
+      });
+      resetLivestream();
     }
+  }
+
+  function resetLivestream() {
+    rtcStream.dispose();
+    dispatch(togglePlayerVisible());
+    setRtcStream(null);
+    setConfirmEndLivestream(false);
+    setIsStreaming(false);
   }
   /**
    * @End_Handle_Streaming
@@ -138,12 +178,31 @@ const Stream = function ({ userInfo, dispatch }) {
       </DivStream>
 
       <FullscreenLivestream
-        onClose={endLivestream}
+        onClose={() => setConfirmEndLivestream(true)}
         visible={isStreaming}
         refStreaming={refStreaming}
         userInfo={userInfo}
         host={userInfo}
       />
+
+      <Modal
+        visible={confirmEndLivestream}
+        title="Xác nhận"
+        onCancel={() => setConfirmEndLivestream(false)}
+        footer={[
+          <Button key="back" onClick={() => setConfirmEndLivestream(false)}>
+            Hủy
+          </Button>,
+          <Button key="yes and delete" onClick={() => endLivestream(false)}>
+            Có và xóa
+          </Button>,
+          <Button key="yes and save" onClick={() => endLivestream(true)}>
+            Có và lưu
+          </Button>,
+        ]}
+      >
+        Kết thúc buổi livestream?
+      </Modal>
       {/* <img ref={imgRef} /> */}
       <ListLivestream />
     </>

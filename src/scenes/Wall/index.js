@@ -22,6 +22,7 @@ import { apiGetUserInfoByUsername } from "services/user/api";
 import { apiFollow, apiUnfollow } from "services/follow/api";
 import { Link } from "react-router-dom";
 import getPublicImage from "common/getPublicImage";
+import ListRecordLivestream from './components/ListRecordLivestream'
 
 const { TabPane } = Tabs;
 
@@ -36,7 +37,6 @@ const Wall = function ({ loginedUser, match: { params } }) {
   const [cover, setCover] = useState(null);
   const [avatar, setAvatar] = useState(null);
   const isLoginedUser = username === loginedUser.username;
-  console.log("isLoginedUser: ", isLoginedUser);
   useEffect(() => {
     apiGetUserInfoByUsername(username).then((user) => {
       const {
@@ -154,11 +154,11 @@ const Wall = function ({ loginedUser, match: { params } }) {
                 <span>Follower</span>
                 <Row gutter={16}>
                   {followers.map((follower) => (
-                    <Col span={6}>
+                    <Col span={6} key={follower.user.username}>
                       <Link to={`/${follower.user.username}`}>
                         <Avatar
                           shape="square"
-                          src={`http://localhost:8080/photos/${follower.user.avatar}`}
+                          src={getPublicImage(follower.user.avatar)}
                           size={64}
                         />
                         <div>{follower.user.username}</div>
@@ -171,11 +171,11 @@ const Wall = function ({ loginedUser, match: { params } }) {
                 <span>Following</span>
                 <Row gutter={16}>
                   {followings.map((following) => (
-                    <Col span={6}>
+                    <Col span={6} key={following.follower.username}>
                       <Link to={`/${following.follower.username}`}>
                         <Avatar
                           shape="square"
-                          src={`http://localhost:8080/photos/${following.follower.avatar}`}
+                          src={getPublicImage(following.follower.avatar)}
                           size={64}
                         />
                         <div>{following.follower.username}</div>
@@ -186,14 +186,14 @@ const Wall = function ({ loginedUser, match: { params } }) {
               </div>
             </div>
             <div className="column-right">
-              <Tabs defaultActiveKey="1" type="card" size="large">
-                <TabPane tab="All" key="1">
+              <Tabs defaultActiveKey="all" type="card" size="large">
+                <TabPane tab="All" key="all">
                   {posts.map((post) => (
                     <Post key={post._id} info={post} />
                   ))}
                 </TabPane>
 
-                <TabPane tab="Playlist" key="2">
+                <TabPane tab="Playlist" key="playlist">
                   {isLoginedUser ? (
                     <OwnPlaylist />
                   ) : (
@@ -202,10 +202,14 @@ const Wall = function ({ loginedUser, match: { params } }) {
                 </TabPane>
 
                 {isLoginedUser ? (
-                  <TabPane tab="Liked" key="3">
+                  <TabPane tab="Liked" key="liked">
                     <PostList getListPost={apiGetListPostLikedByUser} />
                   </TabPane>
                 ) : null}
+
+                <TabPane tab="Streams" key="livestreams">
+                  <ListRecordLivestream userInfo={userInfo} />
+                </TabPane>
               </Tabs>
             </div>
           </div>
@@ -248,7 +252,10 @@ const DivWall = styled.div`
     // color: white;
     display: none;
   }
-  .ant-upload-list-item-info, ant-upload-list-item ant-upload-list-item-done ant-upload-list-item-list-type-text {
+  .ant-upload-list-item-info,
+  ant-upload-list-item
+    ant-upload-list-item-done
+    ant-upload-list-item-list-type-text {
     display: none;
   }
   .ant-card-meta {

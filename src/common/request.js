@@ -2,7 +2,7 @@ import axios from 'axios'
 import { getToken } from './jwt'
 
 const client = axios.create({
-    baseURL: 'http://localhost:8080/',
+    baseURL: 'http://localhost:8080',
     timeout: 12000
 })
 
