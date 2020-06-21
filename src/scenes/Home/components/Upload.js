@@ -95,11 +95,10 @@ class Upload extends React.Component {
             <InboxOutlined />
           </p>
           <p className="ant-upload-text">
-            Click or drag file to this area to upload
+            Click hoặc kéo thả file vào đây để tải lên
           </p>
           <p className="ant-upload-hint">
-            Support for a single or bulk upload. Strictly prohibit from
-            uploading company data or other band files
+            Hỗ trợ tải lên một file
           </p>
         </Dragger>
 

@@ -21,7 +21,16 @@ import {
   pause,
   changeTrack,
 } from "services/player/actions";
-import { message, Drawer, Slider, Popover, Dropdown, Menu, List, Avatar } from "antd";
+import {
+  message,
+  Drawer,
+  Slider,
+  Popover,
+  Dropdown,
+  Menu,
+  List,
+  Avatar,
+} from "antd";
 import MinimapPlugin from "wavesurfer.js/dist/plugin/wavesurfer.minimap";
 
 const Player = function ({
@@ -247,9 +256,11 @@ const Player = function ({
       <Dropdown
         overlay={
           <Menu>
-            {playlist.map((post, index) => <Menu.Item onClick={() => dispatch(changeTrack(index))}>
-              {post.name} - {post.description}
-            </Menu.Item>)}
+            {playlist.map((post, index) => (
+              <Menu.Item onClick={() => dispatch(changeTrack(index))}>
+                {post.name} - {post.description}
+              </Menu.Item>
+            ))}
           </Menu>
         }
         placement="topRight"
@@ -258,7 +269,6 @@ const Player = function ({
       >
         <UnorderedListOutlined className="another" onClick={togglePlaylist} />
       </Dropdown>
-
     </PlayerDiv>
   );
 };
