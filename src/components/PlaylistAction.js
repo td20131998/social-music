@@ -2,25 +2,11 @@ import React from "react";
 import { Modal, List, Button, Empty, Divider, Input, message } from "antd";
 import { BookOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { connect } from "react-redux";
-import { addPostToPlaylist } from "services/playlist/actions";
+import { addPostToPlaylist, addPlaylist } from "services/playlist/actions";
 import styled from "styled-components";
-import { addPlaylist } from 'services/playlist/actions'
-import { apiCreatePlaylist } from 'services/playlist/api'
+import { apiCreatePlaylist, apiSavePostToPlaylist } from 'services/playlist/api'
 
 const { Item } = List;
-
-const CreateNewPlaylist = styled.div`
-  .create-new-playlist {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 65px;
-  }
-  .create-new-playlist:hover {
-    cursor: pointer;
-    background: #f0f2f5;
-  }
-`;
 
 class PlaylistAction extends React.Component {
   constructor(props) {
@@ -57,8 +43,13 @@ class PlaylistAction extends React.Component {
   }
 
   saveToPlaylist(playlistId) {
-    const { postId } = this.props;
-    this.props.dispatch(addPostToPlaylist(postId, playlistId));
+    const { post, dispatch } = this.props;
+    apiSavePostToPlaylist(playlistId, post._id).then(playlist => {
+      if (playlist) {
+        dispatch(addPostToPlaylist(post, playlistId));
+        message.success("Lưu nhạc thành công!")
+      }
+    })
   }
 
   isCreatePlaylist() {
@@ -152,6 +143,19 @@ class PlaylistAction extends React.Component {
     );
   }
 }
+
+const CreateNewPlaylist = styled.div`
+  .create-new-playlist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65px;
+  }
+  .create-new-playlist:hover {
+    cursor: pointer;
+    background: #f0f2f5;
+  }
+`;
 
 export default connect((state) => ({ playlists: state.playlists }))(
   PlaylistAction

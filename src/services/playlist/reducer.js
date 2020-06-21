@@ -11,12 +11,12 @@ export default function playlistReducer(state = [], action) {
       return [...state, ...action.playlists];
 
     case ADD_POST_TO_PLAYLIST:
-      const { playlistId, postId } = action;
+      const { playlistId, post } = action;
       return state.map((playlist) =>
         playlist._id === playlistId
           ? {
               ...playlist,
-              posts: [...playlist.posts, { _id: postId }],
+              posts: [...playlist.posts, post],
               // countSong: playlist.countSong + 1,
             }
           : playlist

@@ -10,25 +10,45 @@ import {
   StepForwardOutlined,
   QuestionCircleOutlined,
   RetweetOutlined,
-  UnorderedListOutlined
+  UnorderedListOutlined,
+  SoundOutlined,
 } from "@ant-design/icons";
-import { playnext, playprevious, playorpause, play, pause } from "services/player/actions";
-import { message, Drawer } from "antd";
+import {
+  playnext,
+  playprevious,
+  playorpause,
+  play,
+  pause,
+  changeTrack,
+} from "services/player/actions";
+import { message, Drawer, Slider, Popover, Dropdown, Menu, List, Avatar } from "antd";
+import MinimapPlugin from "wavesurfer.js/dist/plugin/wavesurfer.minimap";
 
-const Player = function ({ playing, playingIndex, playlist, visible, dispatch, streaming }) {
+const Player = function ({
+  playing,
+  playingIndex,
+  playlist,
+  visible,
+  dispatch,
+}) {
   const refPlayer = useRef();
   const [player, setPlayer] = useState(null);
-  const [visiblePlaylist, setVisiblePlaylist] = useState(false)
+  const [volume, setVolume] = useState(40);
+  const [visiblePlaylist, setVisiblePlaylist] = useState(false);
+  const [currentTime, setCurrentTime] = useState("00:00");
+  const [duration, setDuration] = useState("00:00");
 
   useEffect(() => {
     if (refPlayer.current) {
       setPlayer(
         WaveSurfer.create({
           waveColor: "violet",
-          progressColor: "purple",
-          barWidth: 2,
-          barHeight: 0.5,
-          barGap: 1,
+          progressColor: "white",
+          barWidth: 0,
+          barGap: 0,
+          barMinHeight: 0,
+          barHeight: 0,
+          barRadius: 1,
           cursorWidth: 1,
           container: refPlayer.current,
           backend: "WebAudio",
@@ -44,46 +64,108 @@ const Player = function ({ playing, playingIndex, playlist, visible, dispatch, s
                 value: `Bearer ${getToken()}`,
               },
             ],
-          }
+          },
         })
       );
-    }
-    if (playlist.length > 0) {
-      player.load(playlist[playingIndex]);
     }
   }, []);
 
   useEffect(() => {
-    if (playlist.length > 0) {
-      load(playlist[playingIndex]);
-      player.on('ready', () => {
-        console.log('ready')
-        dispatch(play())
-        player.play()
-      })
-      player.on('finish', () => {
-        if (playlist.length > 1) {
-          next()
-        } else {
-          player.stop()
-          dispatch(pause())
-        }
-      })
-      player.on('loading', () => {
-        console.log('loading')
-      })
+    if (player) {
+      player.setVolume(volume / 100);
+    }
+  }, [volume]);
+
+  function onReady() {
+    player.on("ready", () => {
+      dispatch(play());
+      player.play();
+      setDuration(secondsToMinutes(player.getDuration()));
+    });
+  }
+
+  function onAudioProcess() {
+    player.on("audioprocess", (seconds) => {
+      setCurrentTime(secondsToMinutes(seconds));
+    });
+  }
+
+  function onSeek() {
+    player.on("seek", (percent) => {
+      const seconds = percent * player.getDuration();
+      setCurrentTime(secondsToMinutes(seconds));
+    });
+  }
+
+  function onAudioFinish() {
+    player.on("finish", () => {
+      if (playlist.length > 1) {
+        next();
+      } else {
+        player.stop();
+        dispatch(pause());
+      }
+    });
+  }
+
+  function onLoading() {
+    player.on("loading", () => {
+      console.log("loading");
+    });
+  }
+
+  useEffect(() => {
+    if (playlist.length > 0 && player) {
+      const { src, _id } = playlist[playingIndex];
+      load(src);
+
+      onReady();
+
+      onAudioProcess();
+
+      onSeek();
+
+      onAudioFinish();
+
+      onLoading();
     }
   }, [playingIndex, playlist]);
 
+  function secondsToMinutes(seconds) {
+    const minutesInt = Math.floor(seconds / 60);
+    const secondsInt = Math.floor(seconds - minutesInt * 60);
+    return `${minutesInt < 10 ? `0${minutesInt}` : minutesInt}:${
+      secondsInt < 10 ? `0${secondsInt}` : secondsInt
+    }`;
+  }
+
   useEffect(() => {
     if (player && !visible) {
-      player.pause()
-      dispatch(pause())
+      player.pause();
+      dispatch(pause());
     }
-  }, [visible])
+  }, [visible]);
 
-  function load(audio) {
-    player.load(`http://localhost:8080/api/songs/${audio}`);
+  function load(audioSrc) {
+    const refWave = document.getElementById(playlist[playingIndex]._id);
+    if (player.getActivePlugins().minimap) {
+      player.destroyPlugin("minimap");
+    }
+    player.load(`http://localhost:8080/api/songs/${audioSrc}`);
+    if (refWave) {
+      player
+        .addPlugin(
+          MinimapPlugin.create({
+            container: refWave,
+            waveColor: "#777",
+            progressColor: "#222",
+            height: 60,
+            barWidth: 2,
+            barHeight: 1,
+          })
+        )
+        .initPlugin("minimap");
+    }
   }
 
   function next() {
@@ -102,37 +184,106 @@ const Player = function ({ playing, playingIndex, playlist, visible, dispatch, s
     }
   }
 
-  function handlePlay() {
+  function playOrPause() {
+    if (!player.isReady) {
+      load(playlist[playingIndex].src);
+      onReady();
+      onSeek();
+      onAudioFinish();
+      onAudioProcess();
+    }
     player.playPause();
     dispatch(playorpause());
   }
 
   function togglePlaylist() {
-    setVisiblePlaylist(!visiblePlaylist)
+    setVisiblePlaylist(!visiblePlaylist);
   }
 
   return (
     <PlayerDiv visible={visible}>
       <StepBackwardOutlined className="another" onClick={previous} />
       {!playing ? (
-        <PlayCircleOutlined onClick={handlePlay} className="play-pause" />
+        <PlayCircleOutlined onClick={playOrPause} className="play-pause" />
       ) : (
-        <PauseCircleOutlined onClick={handlePlay} className="play-pause" />
+        <PauseCircleOutlined onClick={playOrPause} className="play-pause" />
       )}
       <StepForwardOutlined className="another" onClick={next} />
-      <QuestionCircleOutlined className="another" />
-      <RetweetOutlined className="another" />
-      <UnorderedListOutlined className="another" onClick={togglePlaylist} />
-      <Wave ref={refPlayer} />
-      <Drawer 
+
+      <Popover
+        style={{ position: "relative" }}
+        content={
+          <div
+            style={{
+              display: "inline-block",
+              height: "100px",
+              bottom: "45px",
+            }}
+          >
+            <Slider
+              vertical
+              defaultValue={volume}
+              onChange={(value) => setVolume(value)}
+            />
+          </div>
+        }
+        trigger="hover"
+      >
+        <SoundOutlined className="another" />
+      </Popover>
+
+      {/* <QuestionCircleOutlined className="another" />
+      <RetweetOutlined className="another" /> */}
+      <Wave ref={refPlayer}>
+        {playlist.length > 0 ? (
+          <span style={{ position: "absolute", left: "5px", top: "7px" }}>
+            {playlist[playingIndex].name} - {playlist[playingIndex].description}
+          </span>
+        ) : null}
+
+        <span style={{ position: "absolute", right: "5px", top: "7px" }}>
+          {currentTime} / {duration}
+        </span>
+      </Wave>
+
+      <Dropdown
+        overlay={
+          <List
+            itemLayout="horizontal"
+            dataSource={playlist}
+            renderItem={(post, index) => (
+              <List.Item onClick={() => dispatch(changeTrack(index))}>
+                <List.Item.Meta
+                  // avatar={
+                  //   <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                  // }
+                  title={post.name}
+                  description={post.description}
+                />
+              </List.Item>
+            )}
+          />
+        }
+        placement="topRight"
+        trigger="click"
+        className="playlist-dropdown"
+      >
+        <UnorderedListOutlined className="another" onClick={togglePlaylist} />
+      </Dropdown>
+
+      {/* <Drawer
         title="Danh sách phát"
         placement="right"
         closable={false}
         onClose={togglePlaylist}
         visible={visiblePlaylist}
       >
-        {playlist.map(post => <div>{post}</div>)}
-      </Drawer>
+        {playlist.map((post, index) => (
+          <div key={post._id} onClick={() => dispatch(changeTrack(index))}>
+            {post.name}
+          </div>
+        ))}
+      </Drawer> */}
     </PlayerDiv>
   );
 };
@@ -141,29 +292,30 @@ const PlayerDiv = styled.div`
   background-color: #2d1653;
   height: 60px;
   color: white;
-  display: ${props => props.visible ? 'flex' : 'none'};
+  display: ${(props) => (props.visible ? "flex" : "none")};
   align-items: center;
   justify-content: center;
   .play-pause,
   .another {
     padding-right: 10px;
+    font-size: 30px;
   }
   .play-pause {
     font-size: 40px;
   }
-  .another {
-    font-size: 30px;
+  
+  .ant-dropdown-menu-items, .playlist-dropdown {
+    padding: 0px !important;
   }
 `;
 
 const Wave = styled.div`
-  width: 50%;
+  width: 40%;
+  margin-right: 10px;
   height: auto;
   display: inline;
-  width: ;
-  wave {
-    // width: 100%;
-  }
+  position: relative;
+  top: 10px;
 `;
 
 export default connect((state) => ({
@@ -171,5 +323,5 @@ export default connect((state) => ({
   playingIndex: state.player.playingIndex,
   playing: state.player.playing,
   visible: state.player.visible,
-  streaming: state.stream.streaming
+  streaming: state.stream.streaming,
 }))(Player);

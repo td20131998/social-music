@@ -10,7 +10,6 @@ const Comment = function ({ info }) {
   return (
     <DivComment>
       <Cm
-        actions={[]}
         author={<Link to={`/${info.user.username}`}>{info.user.fullName}</Link>}
         avatar={
           <Avatar

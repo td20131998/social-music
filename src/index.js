@@ -12,7 +12,9 @@ import thunk from "redux-thunk";
 const store = createStore(rootReducer, applyMiddleware(thunk));
 store.subscribe(() => {
   localStorage.setItem("userInfo", JSON.stringify(store.getState().user.info));
+  localStorage.setItem("player", JSON.stringify(store.getState().player))
 });
+
 ReactDOM.render(
   // <React.StrictMode>
     <BrowserRouter>

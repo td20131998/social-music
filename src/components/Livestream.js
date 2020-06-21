@@ -3,23 +3,9 @@ import styled from "styled-components";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import FullscreenLivestream from "./FullscreenLivestream";
 
-const Livestream = function ({
-  // watchLivestream,
-  host,
-  background,
-  // leaveLivestream,
-  // isWatch,
-  userInfo,
-}) {
-  // const refLivestream = useRef();
+const Livestream = function ({ host, background, userInfo }) {
   const [isWatch, setIsWatch] = useState(false);
 
-  // function play() {
-  //   if (refLivestream.current) {
-  //     refLivestream.current.oncanplay = () => refLivestream.current.play();
-  //     watchLivestream(host, refLivestream);
-  //   }
-  // }
   return (
     <DivLivestream>
       <p>{host.fullName}</p>
@@ -32,7 +18,6 @@ const Livestream = function ({
       <FullscreenLivestream
         onClose={() => setIsWatch(false)}
         visible={isWatch}
-        // refStreaming={refLivestream}
         userInfo={userInfo}
         host={host}
       />

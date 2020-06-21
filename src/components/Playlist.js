@@ -1,14 +1,6 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import {
-  List,
-  Empty,
-  Input,
-  Modal,
-  Button,
-  Popover,
-  message,
-} from "antd";
+import { List, Empty, Input, Modal, Button, Popover, message } from "antd";
 import styled from "styled-components";
 import {
   addPlaylist,
@@ -25,25 +17,14 @@ import {
   MoreOutlined,
   EditOutlined,
   DeleteOutlined,
+  CaretRightOutlined,
 } from "@ant-design/icons";
+import { playPlaylist } from "services/player/actions";
 
 const { Item } = List;
 
-const CreateNewPlaylist = styled.div`
-  .create-new-playlist {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 65px;
-    margin-bottom: 15px;
-  }
-  .create-new-playlist:hover {
-    cursor: pointer;
-    background: #f0f2f5;
-  }
-`;
-
 const OwnPlaylist = function ({ playlists, dispatch }) {
+  console.log(playlists);
   const [mdCreatePlaylist, setMdCreatePlaylist] = useState(false);
   const [mdDeletePlaylistWarning, setMdDeletePlaylistWarning] = useState(false);
   const [playlistName, setPlaylistName] = useState("");
@@ -106,7 +87,7 @@ const OwnPlaylist = function ({ playlists, dispatch }) {
     setIsValidPlaylistName(value.length > 0 && value !== name ? true : false);
     setPlaylistName(value);
   }
-  
+
   function toggleMDCreatePlaylist() {
     setMdCreatePlaylist(!mdCreatePlaylist);
   }
@@ -149,6 +130,10 @@ const OwnPlaylist = function ({ playlists, dispatch }) {
             dataSource={playlist.posts}
             header={
               <>
+                <CaretRightOutlined
+                  style={{ fontSize: "20px" }}
+                  onClick={() => dispatch(playPlaylist(playlist.posts))}
+                />
                 <span className="bold">{playlist.name}</span>
                 <Popover
                   className="playlist-more bold"
@@ -184,7 +169,7 @@ const OwnPlaylist = function ({ playlists, dispatch }) {
                 </span>
                 <span className="divider inline">{`  -  `}</span>
                 <span className="post-name inline">{post.name}</span>
-                <span className="post-views inline right">1M</span>
+                <span className="post-views inline right">{post.view}</span>
               </Item>
             )}
           />
@@ -249,6 +234,20 @@ const OwnPlaylist = function ({ playlists, dispatch }) {
   );
 };
 
+const CreateNewPlaylist = styled.div`
+  .create-new-playlist {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 65px;
+    margin-bottom: 15px;
+  }
+  .create-new-playlist:hover {
+    cursor: pointer;
+    background: #f0f2f5;
+  }
+`;
+
 const DivPlaylist = styled.div`
   .bold {
     font-weight: bold;
@@ -294,7 +293,9 @@ const DivPlaylist = styled.div`
   .post-author {
     color: #e8e9e5;
   }
-  .post-description, .divider, .post-name {
+  .post-description,
+  .divider,
+  .post-name {
     color: #fffae7;
   }
 `;
@@ -330,4 +331,6 @@ const MoreAction = ({ deletePlaylistWarning, editPlaylistModal }) => (
   </MoreActionDiv>
 );
 
-export default connect((state) => ({ playlists: state.playlists }))(OwnPlaylist);
+export default connect((state) => ({ playlists: state.playlists }))(
+  OwnPlaylist
+);

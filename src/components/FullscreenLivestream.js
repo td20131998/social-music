@@ -1,6 +1,15 @@
 import React, { useState, useEffect, useRef, forwardRef } from "react";
 import styled from "styled-components";
-import { Drawer, Row, Col, Avatar, Input, List, notification, message } from "antd";
+import {
+  Drawer,
+  Row,
+  Col,
+  Avatar,
+  Input,
+  List,
+  notification,
+  message,
+} from "antd";
 import Comment from "components/Comment";
 import getPublicImage from "common/getPublicImage";
 import socket from "common/socketio";
@@ -18,10 +27,10 @@ const FullscreenLivestream = function ({
   refStreaming,
   userInfo,
   host,
-  dispatch
+  dispatch,
 }) {
   const [rtcViewer, setRtcViewer] = useState(null);
-  const refVideo = useRef()
+  const refVideo = useRef();
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState("");
   const refComments = useRef();
@@ -101,10 +110,10 @@ const FullscreenLivestream = function ({
 
   useEffect(() => {
     if (visible && refVideo.current) {
-      watchLivestream(host)
-      refVideo.current.oncanplay = () => refVideo.current.play()
+      watchLivestream(host);
+      refVideo.current.oncanplay = () => refVideo.current.play();
     }
-  }, [visible])
+  }, [visible]);
 
   function viewResponse(mess) {
     if (mess.result !== "accepted") {
@@ -124,9 +133,18 @@ const FullscreenLivestream = function ({
       mediaConstraints: {
         audio: true,
         video: {
-          width: 300,
-          framerate: 30,
+          mandatory: {
+            maxWidth: 1024,
+            maxHeight: 768,
+            minWidth: 1024,
+            minHeight: 768,
+          },
         },
+        // video: {
+        //   width: 300,
+
+        //   framerate: 30,
+        // },
       },
     };
     setRtcViewer(
@@ -160,7 +178,7 @@ const FullscreenLivestream = function ({
   function leaveLivestream() {
     if (rtcViewer) {
       rtcViewer.dispose();
-      onClose()
+      onClose();
       dispatch(togglePlayerVisible());
     }
   }
@@ -199,7 +217,7 @@ const FullscreenLivestream = function ({
                   // ref={refComments}
                 >
                   {comments.map((cmt) => (
-                    <List.Item>
+                    <List.Item key={`${cmt.created_at}-${cmt.user.username}`}>
                       <Comment info={cmt} />
                     </List.Item>
                   ))}
