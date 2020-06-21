@@ -232,8 +232,6 @@ const Player = function ({
         <SoundOutlined className="another" />
       </Popover>
 
-      {/* <QuestionCircleOutlined className="another" />
-      <RetweetOutlined className="another" /> */}
       <Wave ref={refPlayer}>
         {playlist.length > 0 ? (
           <span style={{ position: "absolute", left: "5px", top: "7px" }}>
@@ -248,18 +246,11 @@ const Player = function ({
 
       <Dropdown
         overlay={
-          <List
-            itemLayout="horizontal"
-            dataSource={playlist}
-            renderItem={(post, index) => (
-              <List.Item onClick={() => dispatch(changeTrack(index))}>
-                <List.Item.Meta
-                  title={post.name}
-                  description={post.description}
-                />
-              </List.Item>
-            )}
-          />
+          <Menu>
+            {playlist.map((post, index) => <Menu.Item onClick={() => dispatch(changeTrack(index))}>
+              {post.name} - {post.description}
+            </Menu.Item>)}
+          </Menu>
         }
         placement="topRight"
         trigger="click"
@@ -268,19 +259,6 @@ const Player = function ({
         <UnorderedListOutlined className="another" onClick={togglePlaylist} />
       </Dropdown>
 
-      {/* <Drawer
-        title="Danh sách phát"
-        placement="right"
-        closable={false}
-        onClose={togglePlaylist}
-        visible={visiblePlaylist}
-      >
-        {playlist.map((post, index) => (
-          <div key={post._id} onClick={() => dispatch(changeTrack(index))}>
-            {post.name}
-          </div>
-        ))}
-      </Drawer> */}
     </PlayerDiv>
   );
 };
@@ -300,8 +278,10 @@ const PlayerDiv = styled.div`
   .play-pause {
     font-size: 40px;
   }
-  
-  .ant-dropdown-menu-items, .playlist-dropdown {
+  .ant-spin-container > ul {
+    padding: 0 !important;
+  }
+  .ant-dropdown-menu-items {
     padding: 0px !important;
   }
 `;
