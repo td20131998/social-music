@@ -120,7 +120,7 @@ const FullscreenLivestream = function ({
       message.error(`Watch livestream error: ${mess.error}`);
     } else {
       rtcViewer.processAnswer(mess.answer, (err) =>
-        err ? message.error(err) : null
+        err ? console.log(err) : null//message.error(err) : null
       );
     }
   }

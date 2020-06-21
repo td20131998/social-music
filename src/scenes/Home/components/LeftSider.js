@@ -88,12 +88,12 @@ const LeftSider = () => (
         </Link>
       </Item>
 
-      <Item key="6">
+      {/* <Item key="6">
         <Link to="/discover/category">
           <SettingOutlined />
           Thể loại
         </Link>
-      </Item>
+      </Item> */}
     </Menu>
   </DivLeftSider>
 );

@@ -254,9 +254,6 @@ const Player = function ({
             renderItem={(post, index) => (
               <List.Item onClick={() => dispatch(changeTrack(index))}>
                 <List.Item.Meta
-                  // avatar={
-                  //   <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
-                  // }
                   title={post.name}
                   description={post.description}
                 />

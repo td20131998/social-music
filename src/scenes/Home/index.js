@@ -44,7 +44,7 @@ const Home = function () {
 
           <Route path="/discover/popular" component={PopularList} />
 
-          <Route path="/discover/category" component={Category} />
+          {/* <Route path="/discover/category" component={Category} /> */}
         </Col>
 
         <Col xs={0} md={5} lg={5} xl={5} className="home-right">
