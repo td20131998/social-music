@@ -51,7 +51,6 @@ const ListLivestream = function ({ userInfo, dispatch }) {
       setLivestreams(
         livestreams.filter((livestream) => livestream.streamId !== streamId)
       );
-      // rtcViewer.dispose();
     });
   }, []);
 
@@ -60,13 +59,10 @@ const ListLivestream = function ({ userInfo, dispatch }) {
       {livestreams.map((host) => (
         <Livestream
           key={host.id}
-          // watchLivestream={watchLivestream}
           host={host}
           userInfo={userInfo}
           setLivestreams={setLivestreams}
           livestreams={livestreams}
-          // leaveLivestream={leaveLivestream}
-          // isWatch={isWatch}
         />
       ))}
     </>

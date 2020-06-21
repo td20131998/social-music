@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { PlayCircleOutlined } from "@ant-design/icons";
 import FullscreenRecordLivestream from "components/FullscreenRecordLivestream";

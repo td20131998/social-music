@@ -67,7 +67,6 @@ class Upload extends React.Component {
   }
 
   createSong({ title, description }) {
-    console.log(this.state.files)
     let { files } = this.state
     for(let file of files) {
       if (file.status !== 'done') {
