@@ -2,34 +2,24 @@ import React from "react";
 import { Upload as UploadAntd, Form, Input, Button, message } from "antd";
 import { InboxOutlined } from "@ant-design/icons";
 import { apiUploadMusic, apiRemoveMusic } from "services/song/api";
-import { apiCreatePost } from 'services/post/api'
+import { apiCreatePost } from "services/post/api";
 import styled from "styled-components";
 
 const { Dragger } = UploadAntd;
-const { Item } = Form
-
-const UploadDiv = styled.div`
-  .ant-upload-drag {
-    display: ${props => props.isShowDrager ? 'block' : 'none'};
-  }
-  .ant-form {
-    display: ${props => props.isShowDrager ? 'none' : 'block'};
-    margin-top: 10px;
-  }
-`;
+const { Item } = Form;
 
 class Upload extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       files: [],
-      filename: null
+      filename: null,
     };
 
     this.uploadSong = this.uploadSong.bind(this);
     this.onChange = this.onChange.bind(this);
-    this.removeSong = this.removeSong.bind(this)
-    this.createSong = this.createSong.bind(this)
+    this.removeSong = this.removeSong.bind(this);
+    this.createSong = this.createSong.bind(this);
   }
 
   uploadSong(options) {
@@ -43,8 +33,8 @@ class Upload extends React.Component {
     apiUploadMusic(file, config)
       .then((post) => {
         if (post) {
-          this.setState({ filename: post.filename })
-          onSuccess('post');
+          this.setState({ filename: post.filename });
+          onSuccess("post");
         }
       })
       .catch((err) => onError(err));
@@ -55,38 +45,38 @@ class Upload extends React.Component {
   }
 
   removeSong() {
-    apiRemoveMusic(this.state.filename).then(res => {
-      if (res === 'success') {
-        this.setState({ files: [], filename: null })
-        message.success('Remove success!')
+    apiRemoveMusic(this.state.filename).then((res) => {
+      if (res === "success") {
+        this.setState({ files: [], filename: null });
+        message.success("Remove success!");
       } else {
-        this.setState({ files: [], filename: null })
-        message.error('Error!')
+        this.setState({ files: [], filename: null });
+        message.error("Error!");
       }
-    })
+    });
   }
 
   createSong({ title, description }) {
-    let { files } = this.state
-    for(let file of files) {
-      if (file.status !== 'done') {
-        return message.info('Uploading!')
+    let { files } = this.state;
+    for (let file of files) {
+      if (file.status !== "done") {
+        return message.info("Uploading!");
       }
     }
     const data = {
       name: title,
       src: this.state.filename,
-      description: description
-    }
-    apiCreatePost(data).then(res => {
+      description: description,
+    };
+    apiCreatePost(data).then((res) => {
       if (res.src) {
-        this.setState({ files: [], filename: null })
-        message.success("Create success!")
+        this.setState({ files: [], filename: null });
+        message.success("Create success!");
       } else {
-        this.setState({ files: [], filename: null })
-        message.error("Create failed")
+        this.setState({ files: [], filename: null });
+        message.error("Create failed");
       }
-    })
+    });
   }
 
   render() {
@@ -114,17 +104,21 @@ class Upload extends React.Component {
         </Dragger>
 
         <Form onFinish={this.createSong}>
-          <Item label='Title' name='title'>
+          <Item label="Tên bài hát" name="title">
             <Input />
           </Item>
 
-          <Item label='Description' name='description'>
+          <Item label="Mô tả" name="description">
             <Input />
           </Item>
 
-          <Item>
-            <Button type="primary" htmlType="submit">Create</Button>
-            <Button onClick={this.removeSong}>Cancel</Button>
+          <Item style={{ textAlign: "center" }}>
+            <Button type="primary" htmlType="submit">
+              Create
+            </Button>
+            <Button onClick={this.removeSong} style={{ marginLeft: "20px" }}>
+              Cancel
+            </Button>
           </Item>
         </Form>
       </UploadDiv>
@@ -132,4 +126,17 @@ class Upload extends React.Component {
   }
 }
 
+const UploadDiv = styled.div`
+  .ant-upload-drag {
+    display: ${(props) => (props.isShowDrager ? "block" : "none")};
+  }
+  .ant-form {
+    display: ${(props) => (props.isShowDrager ? "none" : "block")};
+    margin-top: 10px;
+  }
+
+  .ant-form-item-label > label {
+    width: 100px;
+  }
+`;
 export default Upload;
