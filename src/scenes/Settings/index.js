@@ -231,6 +231,9 @@ const DivSettings = styled.div`
     width: 30%;
     font-weight: bold;
   }
+  .ant-form-item-required {
+    width: 150px;
+  }
   .name {
     font-weight: bold;
   }

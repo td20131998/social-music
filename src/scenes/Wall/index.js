@@ -271,7 +271,7 @@ const DivWall = styled.div`
   .column-left {
     flex: 4;
     margin-right: 10px;
-    max-width: 40%;
+    max-width: 25%;
     height: 300px;
     background-color: white;
     padding-left: 10px;
@@ -279,7 +279,7 @@ const DivWall = styled.div`
   }
   .column-right {
     flex: 6;
-    max-width: 60%;
+    max-width: 75%;
     background-color: white;
   }
   @media (max-width: 991px) {

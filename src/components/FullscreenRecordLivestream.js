@@ -142,9 +142,7 @@ const FullscreenRecordLivestream = function ({
                 <span style={{ marginLeft: "45px", display: "inline-block" }}>
                   <div>{host.fullName}</div>
                   <div>
-                    {moment(new Date(stream.created_at)).format(
-                      "HH:mm:ss DD-MM-YYYY"
-                    )}
+                    {moment(new Date(stream.created_at)).fromNow()}
                   </div>
                 </span>
               </div>
