@@ -5,6 +5,7 @@ import RootLayout from './RootLayout'
 import Auth from './scenes/Auth'
 import { connect } from 'react-redux'
 import { getToken } from './common/jwt'
+console.log("aaaa")
 
 function PrivateRoute({ children, isAuthenticated, ...rest }) {
   return (
